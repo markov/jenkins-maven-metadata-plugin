@@ -32,14 +32,12 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
-import hudson.model.ParametersDefinitionProperty;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -52,7 +50,6 @@ import org.jvnet.localizer.ResourceBundleHolder;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.export.Exported;
 
 /**
  * Sample {@link Builder}.
@@ -72,27 +69,22 @@ import org.kohsuke.stapler.export.Exported;
  * 
  * @author Kohsuke Kawaguchi
  */
+@Getter
 public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
   private static final long         serialVersionUID = 8870104917672751538L;
   private static final String       SORT_ASC         = "ASC";
   private static final String       SORT_DESC        = "DESC";
-  private static final List<String> SORT_ORDERS      = Arrays.asList(SORT_DESC, SORT_ASC);
 
-  @Getter
   private final String              tagsDir;
-  @Getter
   private final String              versionFilter;
-  @Getter
   private final String              sortOrder;
-  @Getter
   private final String              defaultValue;
-  @Getter
   private final String              maxVersions;
 
   @DataBoundConstructor
-  public MavenMetadataParameterDefinition(String name, String description, String tagsDir, String versionFilter, String sortOrder,
-      String defaultValue, String maxVersions) {
+  public MavenMetadataParameterDefinition(String name, String description, String tagsDir, String versionFilter,
+      String sortOrder, String defaultValue, String maxVersions) {
     super(name, description);
     this.tagsDir = Util.removeTrailingSlash(tagsDir);
     this.versionFilter = versionFilter;
@@ -176,6 +168,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
   @Extension
   public static class DescriptorImpl extends ParameterDescriptor {
+    private static final List<String> SORT_ORDERS      = Arrays.asList(SORT_DESC, SORT_ASC);
 
     public FormValidation doCheckVersionFilter(@QueryParameter String value) {
       if (value != null && value.length() == 0) {
