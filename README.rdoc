@@ -12,9 +12,9 @@ Built and tested against Jenkins 1.457.
 
 = LICENSE & AUTHOR:
 
-Author:: Gesh Markov (<gesh@markov.eu>)
+Author:: Georgi "Gesh" Markov (<gesh@markov.eu>)
 
-Copyright:: 2012, Gesh Markov
+Copyright:: 2012, AKQA, Georgi "Gesh" Markov
 
 Licensed under the MIT License
 
