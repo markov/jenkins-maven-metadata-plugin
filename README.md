@@ -4,11 +4,21 @@ This plugin adds a new build parameter type - maven-metadata. If you select this
 groupId and artifactId the plugin will check for that artifact at the given repository and let whoever started the
 build select a version of the artifact to bind as a build parameter.
 
+There are also several options to provide default values that will also get evaluated at run-time:
+ * FIRST - will evaluate to the first item in the drop-down that would have been presented had the build been executed manually
+ * LAST - will evaluate to the last item in the drop-down that would have been presented had the build been executed manually.
+ * RELEASE - will evaluate to the version marked as RELEASE in the [repository metadata][] for the configured artifact.
+   The versionFilter even if defined is ignored for this default value.
+ * LATEST - will evaluate to the version marked as LATEST in the [repository metadata][] for the configured artifact.
+   The versionFilter even if defined is ignored for this default value.
+
+[repository metadata]: http://docs.codehaus.org/display/MAVEN/Repository+Metadata
+
 = REQUIREMENTS:
 
 == Jenkins:
 
-Built and tested against Jenkins 1.457.
+Built and tested against Jenkins 1.447.
 
 = LICENSE & AUTHOR:
 
