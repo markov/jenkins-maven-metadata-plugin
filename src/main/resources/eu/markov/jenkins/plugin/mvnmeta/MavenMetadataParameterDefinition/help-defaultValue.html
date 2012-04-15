@@ -23,6 +23,21 @@
   -->
 
 <div>
-  For features such as SVN polling a default value is required. If job will only
-  be started manually, this field is not necessary.
+	For features such as SVN polling a default value is required. If job will only be started manually, this field is not
+	necessary.<br> There are 4 special default values which will be evaluated at runtime:
+
+	<ul>
+		<li>FIRST - will evaluate to the first item in the drop-down that would have been presented had the build been executed
+			manually.</li>
+		<li>LAST - will evaluate to the last item in the drop-down that would have been presented had the build been executed
+			manually.</li>
+		<li>RELEASE - will evaluate to the version marked as RELEASE in the <a
+			href="http://docs.codehaus.org/display/MAVEN/Repository+Metadata">repository metadata</a> for the configured artifact. The
+			versionFilter even if defined is ignored for this default value.
+		</li>
+		<li>LATEST - will evaluate to the version marked as LATEST in the <a
+			href="http://docs.codehaus.org/display/MAVEN/Repository+Metadata">repository metadata</a> for the configured artifact. The
+			versionFilter even if defined is ignored for this default value.
+		</li>
+	</ul>
 </div>

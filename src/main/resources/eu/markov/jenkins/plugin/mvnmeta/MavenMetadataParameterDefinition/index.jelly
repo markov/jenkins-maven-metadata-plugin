@@ -28,25 +28,27 @@
     <!-- this div is required because of ParametersDefinitionProperty.java#117 -->
     <div name="parameter">
       <input type="hidden" name="name" value="${it.name}"/>
+      <input type="hidden" name="groupId" value="${it.groupId}"/>
+      <input type="hidden" name="artifactId" value="${it.artifactId}"/>
       <j:choose>
-        <j:when test="${it.tags.size() == null or it.tags.size() == 0}">
+        <j:when test="${it.versions.size() == null or it.versions.size() == 0}">
           <!-- no tags at all -->
-          ${%No directory entries were found.}<br/>
+          ${%No versions found.}<br/>
           ${%If you trigger the build, it will likely fail.}
         </j:when>
-        <j:when test='${it.tags.size() == 1 and it.tags.get(0).startsWith("&amp;lt;") and it.tags.get(0).endsWith("&amp;gt;")}'>
+        <j:when test='${it.versions.size() == 1 and it.versions.get(0).startsWith("&amp;lt;") and it.versions.get(0).endsWith("&amp;gt;")}'>
           <!-- tags could not be retrieved -->
           <div style="color: #CC0000; font-weight: bold;">
             <!-- we remove the lowerThan and greaterThan signs from the message -->
-            ${it.tags.get(0).substring(4, it.tags.get(0).length()-4)}<br/>
+            ${it.versions.get(0).substring(4, it.versions.get(0).length()-4)}<br/>
             ${%If you trigger the build, it will likely fail.}
           </div>
         </j:when>
         <j:otherwise>
           <!-- everything is fine, we can display the drop-down list to the user -->
-          <select name="tag">
-            <j:forEach var="tag" items="${it.tags}">
-              <f:option>${tag}</f:option>
+          <select name="version">
+            <j:forEach var="version" items="${it.versions}">
+              <f:option>${version}</f:option>
             </j:forEach>
           </select>
         </j:otherwise>

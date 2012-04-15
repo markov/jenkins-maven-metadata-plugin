@@ -30,10 +30,16 @@
     <f:entry title="${%Description}" field="description">
         <f:textarea name="parameter.description" value="${instance.description}" />
     </f:entry>
-    <f:entry title="${%Repository URL}" field="tagsDir">
-        <f:textbox name="parameter.tagsDir" value="${instance.tagsDir}" />
+    <f:entry title="${%Repository Base URL}" field="repoBaseUrl">
+        <f:textbox name="parameter.repoBaseUrl" value="${instance.repoBaseUrl}" />
     </f:entry>
-    <f:entry title="${%Tags filter}" field="versionFilter">
+    <f:entry title="${%Artifact Group ID}" field="groupId">
+        <f:textbox name="parameter.groupId" value="${instance.groupId}" />
+    </f:entry>
+    <f:entry title="${%Artifact ID}" field="artifactId">
+        <f:textbox name="parameter.artifactId" value="${instance.artifactId}" />
+    </f:entry>
+    <f:entry title="${%Versions filter}" field="versionFilter">
         <f:textbox field="parameter.versionFilter" value="${instance.versionFilter}" />
     </f:entry>
     <f:entry title="${%Default value}" field="defaultValue">
@@ -45,7 +51,7 @@
     <f:entry title="${%Sorting order}" field="sortOrder" name="sortOrder" >
         <select name="sortOrder">
           <j:forEach var="sortOrderOption" items="${descriptor.sortOrders}">
-            <f:option selected="${instance.sortOrder==sortOrderOption}">${sortOrderOption}</f:option>
+            <f:option selected="${instance.sortOrder==sortOrderOption}" value="${sortOrderOption.name()}">${sortOrderOption.displayName}</f:option>
           </j:forEach>
         </select>
     </f:entry> 

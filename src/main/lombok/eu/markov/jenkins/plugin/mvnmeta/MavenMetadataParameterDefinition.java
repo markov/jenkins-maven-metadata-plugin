@@ -24,23 +24,22 @@
 package eu.markov.jenkins.plugin.mvnmeta;
 
 import hudson.Extension;
-import hudson.Launcher;
 import hudson.Util;
-import hudson.model.BuildListener;
 import hudson.model.ParameterValue;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
-import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 
 import lombok.Getter;
 import net.sf.json.JSONObject;
@@ -52,45 +51,65 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Sample {@link Builder}.
  * 
- * <p>
- * When the user configures the project and enables this builder,
- * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
- * {@link MavenMetadataParameterDefinition} is created. The created instance is
- * persisted to the project configuration XML by using XStream, so this allows
- * you to use instance fields (like {@link #name}) to remember the
- * configuration.
  * 
- * <p>
- * When a build is performed, the
- * {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be
- * invoked.
- * 
- * @author Kohsuke Kawaguchi
+ * @author Gesh Markov &lt;gesh@markov.eu&gt;
  */
 @Getter
 public class MavenMetadataParameterDefinition extends ParameterDefinition {
+  private static final long    serialVersionUID     = -3820719539319589460L;
 
-  private static final long         serialVersionUID = 8870104917672751538L;
-  private static final String       SORT_ASC         = "ASC";
-  private static final String       SORT_DESC        = "DESC";
+  private static final String  DEFAULT_FIRST        = "FIRST";
+  private static final String  DEFAULT_LAST         = "LAST";
+  private static final String  DEFAULT_LATEST       = "LATEST";
+  private static final String  DEFAULT_RELEASE      = "RELEASE";
+  private static final Pattern MATCH_ALL            = Pattern.compile(".*");
 
-  private final String              tagsDir;
-  private final String              versionFilter;
-  private final String              sortOrder;
-  private final String              defaultValue;
-  private final String              maxVersions;
+  private transient int        maxVers              = Integer.MIN_VALUE;
+  private transient Pattern    versionFilterPattern = null;                  ;
+
+  private final String         repoBaseUrl;
+  private final String         groupId;
+  private final String         artifactId;
+  private final String         defaultValue;
+  private final String         versionFilter;
+  private final SortOrder      sortOrder;
+  private final String         maxVersions;
 
   @DataBoundConstructor
-  public MavenMetadataParameterDefinition(String name, String description, String tagsDir, String versionFilter,
-      String sortOrder, String defaultValue, String maxVersions) {
+  public MavenMetadataParameterDefinition(String name, String description, String repoBaseUrl, String groupId,
+      String artifactId, String versionFilter, String sortOrder, String defaultValue, String maxVersions) {
     super(name, description);
-    this.tagsDir = Util.removeTrailingSlash(tagsDir);
-    this.versionFilter = versionFilter;
-    this.sortOrder = sortOrder;
-    this.defaultValue = defaultValue;
+    this.repoBaseUrl = Util.removeTrailingSlash(repoBaseUrl);
+    this.groupId = groupId;
+    this.artifactId = artifactId;
+    this.versionFilter = StringUtils.trim(versionFilter);
+    this.sortOrder = SortOrder.valueOf(sortOrder);
+    this.defaultValue = StringUtils.trim(defaultValue);
     this.maxVersions = maxVersions;
+  }
+
+  public int getMaxVers() {
+    if (this.maxVers == Integer.MIN_VALUE) {
+      int maxVers = Integer.MAX_VALUE;
+      try {
+        maxVers = Integer.parseInt(maxVersions);
+      } catch (NumberFormatException e) {
+      }
+      this.maxVers = maxVers;
+    }
+    return this.maxVers;
+  }
+
+  public Pattern getVersionFilterPattern() {
+    if (versionFilterPattern == null) {
+      if (StringUtils.isNotBlank(this.versionFilter)) {
+        versionFilterPattern = Pattern.compile(this.versionFilter);
+      } else {
+        versionFilterPattern = MATCH_ALL;
+      }
+    }
+    return versionFilterPattern;
   }
 
   // This method is invoked from a GET or POST HTTP request
@@ -99,29 +118,52 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     String[] values = req.getParameterValues(getName());
     if (values == null || values.length != 1) {
       return this.getDefaultParameterValue();
-    } else {
-      return new MavenMetadataParameterValue(getName(), getTagsDir(), values[0]);
     }
+
+    String version = values[0];
+
+    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version,
+        getVersionUrl(version));
   }
 
-  // This method is invoked when the user clicks on the "Build" button of
-  // Hudon's GUI
+  // This method is invoked when the user clicks on the "Build" button of Hudon's GUI
   @Override
   public ParameterValue createValue(StaplerRequest req, JSONObject formData) {
     MavenMetadataParameterValue value = req.bindJSON(MavenMetadataParameterValue.class, formData);
-    value.setMvnRepoUrl(getTagsDir());
-    // here, we could have checked for the value of the "tag" attribute of the
-    // parameter value, but it's of no use because if we return null the build
-    // still goes on...
+    value.setDescription(getDescription());
+    value.setVersionUrl(getVersionUrl(value.getVersion()));
+    // here, we could validate the parameter value,
+    // but it's of no use because if we return null the build still goes on...
     return value;
   }
 
   @Override
   public ParameterValue getDefaultParameterValue() {
-    if (StringUtils.isEmpty(this.defaultValue)) {
+    String defaultVersion = null;
+    if (DEFAULT_FIRST.equals(this.defaultValue)) {
+      List<String> allVersions = getArtifactMetadata().versioning.versions;
+      if (allVersions.size() > 0) {
+        defaultVersion = allVersions.get(0);
+      }
+    } else if (DEFAULT_LAST.equals(this.defaultValue)) {
+      List<String> allVersions = getArtifactMetadata().versioning.versions;
+      if (allVersions != null && allVersions.size() > 0) {
+        defaultVersion = allVersions.get(allVersions.size() - 1);
+      }
+    } else if (DEFAULT_LATEST.equals(this.defaultValue)) {
+      defaultVersion = getArtifactMetadata().versioning.latest;
+    } else if (DEFAULT_RELEASE.equals(this.defaultValue)) {
+      defaultVersion = getArtifactMetadata().versioning.release;
+    } else {
+      defaultVersion = this.defaultValue;
+    }
+
+    if (StringUtils.isBlank(defaultVersion)) {
       return null;
     }
-    return new MavenMetadataParameterValue(getName(), getTagsDir(), this.defaultValue);
+
+    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), defaultVersion,
+        getVersionUrl(defaultVersion));
   }
 
   @Override
@@ -129,49 +171,79 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return (DescriptorImpl) super.getDescriptor();
   }
 
-  /**
-   * Returns a list of Subversion dirs to be displayed in
-   * {@code ListSubversionTagsParameterDefinition/index.jelly}.
-   * 
-   * <p>
-   * This method plainly reuses settings that must have been previously defined
-   * when configuring the Subversion SCM.
-   * </p>
-   * 
-   * <p>
-   * This method never returns {@code null}. In case an error happens, the
-   * returned list contains an error message surrounded by &lt; and &gt;.
-   * </p>
-   */
-  public List<String> getTags() {
-    AbstractProject context = null;
-    List<AbstractProject> jobs = Hudson.getInstance().getItems(AbstractProject.class);
+  public List<String> getVersions() {
+    return getArtifactMetadata().versioning.versions;
+  }
 
-    List<String> dirs = new ArrayList<String>();
+  private MavenMetadataVersions getArtifactMetadata() {
+    try {
+      JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
+      Unmarshaller unmarshaller = context.createUnmarshaller();
+      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(new URL(
+          getVersionUrl("maven-metadata.xml")));
 
-    return dirs;
+      if (sortOrder == SortOrder.DESC) {
+        Collections.reverse(metadata.versioning.versions);
+      }
+      metadata.versioning.versions = filterVersions(metadata.versioning.versions);
+
+      return metadata;
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, "Could not parse maven-metadata.xml", e);
+      MavenMetadataVersions result = new MavenMetadataVersions();
+      result.versioning.versions.add("<" + e.getMessage() + ">");
+      return result;
+    }
   }
 
   /**
-   * Removes the parent directory (that is, the tags directory) from a list of
-   * directories.
+   * @param all
+   * @return
    */
-  protected void removeParentDir(List<String> dirs) {
-    List<String> dirsToRemove = new ArrayList<String>();
-    for (String dir : dirs) {
-      if (getTagsDir().endsWith(dir)) {
-        dirsToRemove.add(dir);
+  private List<String> filterVersions(List<String> all) {
+    ArrayList<String> filteredList = new ArrayList<String>(all.size());
+    for (String version : all) {
+      if (getVersionFilterPattern().matcher(version).matches()) {
+        filteredList.add(version);
+        if (filteredList.size() == getMaxVers()) {
+          break;
+        }
       }
     }
-    dirs.removeAll(dirsToRemove);
+    return filteredList;
+  }
+
+  /**
+   * Creates a full URL based on the given version parameter and the fields of this instance.
+   * 
+   * @param version
+   *          the version for which to create the full URL.
+   * @return the full URL for the given version.
+   */
+  private String getVersionUrl(String version) {
+    StringBuilder versionBuilder = new StringBuilder(getRepoBaseUrl());
+    versionBuilder.append("/").append(getGroupId().replaceAll("\\.", "/"));
+    versionBuilder.append("/").append(getArtifactId());
+    versionBuilder.append("/").append(version);
+
+    return versionBuilder.toString();
+  }
+
+  public static enum SortOrder {
+    DESC("Descending"), ASC("Ascending");
+    @Getter
+    private String displayName;
+
+    private SortOrder(String displayName) {
+      this.displayName = displayName;
+    }
   }
 
   @Extension
   public static class DescriptorImpl extends ParameterDescriptor {
-    private static final List<String> SORT_ORDERS      = Arrays.asList(SORT_DESC, SORT_ASC);
 
     public FormValidation doCheckVersionFilter(@QueryParameter String value) {
-      if (value != null && value.length() == 0) {
+      if (StringUtils.isNotBlank(value)) {
         try {
           Pattern.compile(value);
         } catch (PatternSyntaxException pse) {
@@ -181,8 +253,8 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
       return FormValidation.ok();
     }
 
-    public List<String> getSortOrders() {
-      return SORT_ORDERS;
+    public SortOrder[] getSortOrders() {
+      return SortOrder.values();
     }
 
     @Override

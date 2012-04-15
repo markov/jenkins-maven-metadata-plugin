@@ -31,6 +31,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -41,32 +43,62 @@ import org.kohsuke.stapler.export.Exported;
 @Setter
 @ToString
 public class MavenMetadataParameterValue extends ParameterValue {
-  private static final long serialVersionUID = -7853796229856029964L;
+  private static final long  serialVersionUID   = -7853796229856029964L;
+  public static final String GROUP_ID_SUFFIX    = "_GROUP_ID";
+  public static final String ARTIFACT_ID_SUFFIX = "_ARTIFACT_ID";
+  public static final String VERSION_SUFFIX     = "_VERSION";
+  public static final String VERSION_URL_SUFFIX = "_VERSION_URL";
 
   @Exported
-  private String            mvnRepoUrl;
+  private final String       groupId;
   @Exported
-  private String            version;
+  private final String       artifactId;
+  @Exported
+  private final String       version;
+  @Exported
+  private String             versionUrl;
 
   /**
    * @param name
    */
-  protected MavenMetadataParameterValue(String name, String mvnRepoUrl, String version) {
-    super(name);
-    this.mvnRepoUrl = mvnRepoUrl;
+  @DataBoundConstructor
+  public MavenMetadataParameterValue(String name, String description, String groupId, String artifactId, String version,
+      String versionUrl) {
+    super(name, description);
+    this.groupId = groupId;
+    this.artifactId = artifactId;
     this.version = version;
+    this.versionUrl = versionUrl;
   }
 
   @Override
   public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
-    env.put(getName(), getVersion());
+    env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
+    env.put(getName() + ARTIFACT_ID_SUFFIX, getArtifactId());
+    env.put(getName() + VERSION_SUFFIX, getVersion());
+    env.put(getName() + VERSION_URL_SUFFIX, getVersionUrl());
   }
 
   @Override
   public VariableResolver<String> createVariableResolver(AbstractBuild<?, ?> build) {
     return new VariableResolver<String>() {
+      @Override
       public String resolve(String name) {
-        return MavenMetadataParameterValue.this.name.equals(name) ? getVersion() : null;
+        if (StringUtils.isNotBlank(name)) {
+          if (name.equals(getName() + GROUP_ID_SUFFIX)) {
+            return getGroupId();
+          }
+          if (name.equals(getName() + ARTIFACT_ID_SUFFIX)) {
+            return getArtifactId();
+          }
+          if (name.equals(getName() + VERSION_SUFFIX)) {
+            return getVersion();
+          }
+          if (name.equals(getName() + VERSION_URL_SUFFIX)) {
+            return getVersionUrl();
+          }
+        }
+        return null;
       }
     };
   }
