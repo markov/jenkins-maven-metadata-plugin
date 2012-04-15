@@ -1,10 +1,10 @@
 # DESCRIPTION: #
 
-This plugin adds a new build parameter type - maven-metadata. If you select this type and give in a repository URL,
-groupId and artifactId the plugin will check for that artifact at the given repository and let whoever started the
+This plugin adds a new build parameter type - maven-metadata. If you select this type and give in a `repositoryURL`,
+`groupId` and `artifactId` the plugin will check for that artifact at the given repository and let whoever started the
 build select a version of the artifact to bind as a build parameter.
 
-There are also several options to provide default values that will also get evaluated at run-time:
+There are also several options to provide default values which will also be evaluated at run-time:
 
 -	FIRST - will evaluate to the first item in the drop-down that would have been presented had the build been executed manually
 -	LAST - will evaluate to the last item in the drop-down that would have been presented had the build been executed manually.
