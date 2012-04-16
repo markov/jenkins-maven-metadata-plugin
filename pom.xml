@@ -11,6 +11,24 @@
 	<artifactId>maven-metadata-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
+
+	<url>https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin</url>
+
+	<scm>
+		<connection>scm:git:ssh://github.com/jenkinsci/maven-metadata-plugin.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/maven-metadata-plugin.git</developerConnection>
+		<url>https://github.com/jenkinsci/maven-metadata-plugin</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>markov</id>
+			<email>gesh@markov.eu</email>
+			<name>Georgi "Gesh" Markov</name>
+			<timezone>CET</timezone>
+		</developer>
+	</developers>
+
 	<licenses>
 		<license>
 			<name>MIT license</name>
