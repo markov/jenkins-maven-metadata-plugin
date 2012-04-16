@@ -42,7 +42,7 @@ import lombok.ToString;
 public class MavenMetadataVersions {
 
   @XmlElement
-  Versioning versioning;
+  Versioning versioning = new Versioning();
 
   @ToString
   public static class Versioning {

@@ -32,7 +32,10 @@
     <f:entry title="${it.name}${it.ARTIFACT_ID_SUFFIX}">
         <f:textbox name="artifactId" value="${it.artifactId}" readonly="true"  />
     </f:entry>
-    <f:entry title="${it.name}${it.VERSION_URL_SUFFIX}">
-		<a href="${it.versionUrl}">${it.versionUrl}</a>
+    <f:entry title="${it.name}${it.PACKAGING_SUFFIX}">
+        <f:textbox name="packaging" value="${it.packaging}" readonly="true"  />
+    </f:entry>
+    <f:entry title="${it.name}${it.ARTIFACT_URL_SUFFIX}">
+		<a href="${it.artifactUrl}">${it.artifactUrl}</a>
     </f:entry>
 </j:jelly>

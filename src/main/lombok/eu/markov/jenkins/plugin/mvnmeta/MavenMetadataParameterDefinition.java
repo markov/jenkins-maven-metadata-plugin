@@ -29,7 +29,11 @@ import hudson.model.ParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +48,7 @@ import javax.xml.bind.Unmarshaller;
 import lombok.Getter;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.jvnet.localizer.ResourceBundleHolder;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -64,13 +69,15 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   private static final String  DEFAULT_LATEST       = "LATEST";
   private static final String  DEFAULT_RELEASE      = "RELEASE";
   private static final Pattern MATCH_ALL            = Pattern.compile(".*");
+  private static final Charset UTF8                 = Charset.forName("UTF-8");
 
   private transient int        maxVers              = Integer.MIN_VALUE;
-  private transient Pattern    versionFilterPattern = null;                  ;
+  private transient Pattern    versionFilterPattern = null;
 
   private final String         repoBaseUrl;
   private final String         groupId;
   private final String         artifactId;
+  private final String         packaging;
   private final String         defaultValue;
   private final String         versionFilter;
   private final SortOrder      sortOrder;
@@ -78,11 +85,12 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
   @DataBoundConstructor
   public MavenMetadataParameterDefinition(String name, String description, String repoBaseUrl, String groupId,
-      String artifactId, String versionFilter, String sortOrder, String defaultValue, String maxVersions) {
+      String artifactId, String packaging, String versionFilter, String sortOrder, String defaultValue, String maxVersions) {
     super(name, description);
     this.repoBaseUrl = Util.removeTrailingSlash(repoBaseUrl);
     this.groupId = groupId;
     this.artifactId = artifactId;
+    this.packaging = packaging;
     this.versionFilter = StringUtils.trim(versionFilter);
     this.sortOrder = SortOrder.valueOf(sortOrder);
     this.defaultValue = StringUtils.trim(defaultValue);
@@ -112,6 +120,13 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return versionFilterPattern;
   }
 
+  public String readPackaging() {
+    if (StringUtils.isNotBlank(this.packaging)) {
+      return this.packaging;
+    }
+    return "jar";
+  }
+
   // This method is invoked from a GET or POST HTTP request
   @Override
   public ParameterValue createValue(StaplerRequest req) {
@@ -122,8 +137,8 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
     String version = values[0];
 
-    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version,
-        getVersionUrl(version));
+    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version, readPackaging(),
+        getFullArtifactUrl(getGroupId(), getArtifactId(), version, readPackaging()));
   }
 
   // This method is invoked when the user clicks on the "Build" button of Hudon's GUI
@@ -131,7 +146,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   public ParameterValue createValue(StaplerRequest req, JSONObject formData) {
     MavenMetadataParameterValue value = req.bindJSON(MavenMetadataParameterValue.class, formData);
     value.setDescription(getDescription());
-    value.setVersionUrl(getVersionUrl(value.getVersion()));
+    value.setArtifactUrl(getFullArtifactUrl(value));
     // here, we could validate the parameter value,
     // but it's of no use because if we return null the build still goes on...
     return value;
@@ -163,7 +178,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     }
 
     return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), defaultVersion,
-        getVersionUrl(defaultVersion));
+        readPackaging(), getFullArtifactUrl(getGroupId(), getArtifactId(), defaultVersion, readPackaging()));
   }
 
   @Override
@@ -176,11 +191,18 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   }
 
   private MavenMetadataVersions getArtifactMetadata() {
+    InputStream input = null;
     try {
+      URL url = new URL(getArtifactUrlForPath("maven-metadata.xml"));
+      URLConnection conn = url.openConnection();
+      if (StringUtils.isNotBlank(url.getUserInfo())) {
+        String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
+        conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
+      }
+      input = conn.getInputStream();
       JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
       Unmarshaller unmarshaller = context.createUnmarshaller();
-      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(new URL(
-          getVersionUrl("maven-metadata.xml")));
+      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(input);
 
       if (sortOrder == SortOrder.DESC) {
         Collections.reverse(metadata.versioning.versions);
@@ -191,8 +213,15 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Could not parse maven-metadata.xml", e);
       MavenMetadataVersions result = new MavenMetadataVersions();
-      result.versioning.versions.add("<" + e.getMessage() + ">");
+      result.versioning.versions.add("<" + e.getClass().getName() + ": " + e.getMessage() + ">");
       return result;
+    } finally {
+      try {
+        if (input != null)
+          input.close();
+      } catch (IOException e) {
+        // ignore
+      }
     }
   }
 
@@ -214,17 +243,44 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   }
 
   /**
-   * Creates a full URL based on the given version parameter and the fields of this instance.
+   * Creates a full URL based on the given path parameter and the {@link #repoBaseUrl}, {@link #groupId} and {@link #artifactId}
+   * of this instance.
    * 
-   * @param version
-   *          the version for which to create the full URL.
+   * @param path
+   *          the path for which to create the full URL.
    * @return the full URL for the given version.
    */
-  private String getVersionUrl(String version) {
+  private String getArtifactUrlForPath(String path) {
     StringBuilder versionBuilder = new StringBuilder(getRepoBaseUrl());
     versionBuilder.append("/").append(getGroupId().replaceAll("\\.", "/"));
     versionBuilder.append("/").append(getArtifactId());
-    versionBuilder.append("/").append(version);
+    versionBuilder.append("/").append(path);
+
+    return versionBuilder.toString();
+  }
+
+  private String getFullArtifactUrl(MavenMetadataParameterValue value) {
+    return getFullArtifactUrl(value.getGroupId(), value.getArtifactId(), value.getVersion(), value.getPackaging());
+  }
+
+  /**
+   * Creates a full URL based on the given parameters and the {@link #getRepoBaseUrl()} of this instance.
+   * 
+   * @param groupId
+   *          the group to use for the full version
+   * @param artifactId
+   *          the artifact to use for the full url
+   * @param version
+   *          the version to use for the full url
+   * @param packaging
+   *          the packaging to use for the full url
+   * @return the full URL for the given version.
+   */
+  private String getFullArtifactUrl(String groupId, String artifactId, String version, String packaging) {
+    StringBuilder versionBuilder = new StringBuilder(getArtifactUrlForPath(version));
+    versionBuilder.append("/").append(artifactId);
+    versionBuilder.append("-").append(version);
+    versionBuilder.append(".").append(packaging);
 
     return versionBuilder.toString();
   }

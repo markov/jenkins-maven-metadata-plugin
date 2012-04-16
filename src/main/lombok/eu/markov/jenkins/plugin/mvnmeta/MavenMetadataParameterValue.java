@@ -47,7 +47,8 @@ public class MavenMetadataParameterValue extends ParameterValue {
   public static final String GROUP_ID_SUFFIX    = "_GROUP_ID";
   public static final String ARTIFACT_ID_SUFFIX = "_ARTIFACT_ID";
   public static final String VERSION_SUFFIX     = "_VERSION";
-  public static final String VERSION_URL_SUFFIX = "_VERSION_URL";
+  public static final String PACKAGING_SUFFIX   = "_PACKAGING";
+  public static final String ARTIFACT_URL_SUFFIX = "_ARTIFACT_URL";
 
   @Exported
   private final String       groupId;
@@ -56,19 +57,22 @@ public class MavenMetadataParameterValue extends ParameterValue {
   @Exported
   private final String       version;
   @Exported
-  private String             versionUrl;
+  private final String       packaging;
+  @Exported
+  private String             artifactUrl;
 
   /**
    * @param name
    */
   @DataBoundConstructor
   public MavenMetadataParameterValue(String name, String description, String groupId, String artifactId, String version,
-      String versionUrl) {
+        String packaging, String artifactUrl) {
     super(name, description);
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
-    this.versionUrl = versionUrl;
+    this.packaging = packaging;
+    this.artifactUrl = artifactUrl;
   }
 
   @Override
@@ -76,7 +80,8 @@ public class MavenMetadataParameterValue extends ParameterValue {
     env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
     env.put(getName() + ARTIFACT_ID_SUFFIX, getArtifactId());
     env.put(getName() + VERSION_SUFFIX, getVersion());
-    env.put(getName() + VERSION_URL_SUFFIX, getVersionUrl());
+    env.put(getName() + ARTIFACT_URL_SUFFIX, getArtifactUrl());
+    env.put(getName() + PACKAGING_SUFFIX, getPackaging());
   }
 
   @Override
@@ -94,9 +99,12 @@ public class MavenMetadataParameterValue extends ParameterValue {
           if (name.equals(getName() + VERSION_SUFFIX)) {
             return getVersion();
           }
-          if (name.equals(getName() + VERSION_URL_SUFFIX)) {
-            return getVersionUrl();
-          }
+          if (name.equals(getName() + ARTIFACT_URL_SUFFIX)) {
+              return getArtifactUrl();
+            }
+          if (name.equals(getName() + PACKAGING_SUFFIX)) {
+              return getPackaging();
+            }
         }
         return null;
       }
