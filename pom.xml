@@ -8,7 +8,7 @@
 	</parent>
 
 	<groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
-	<artifactId>jenkins-maven-metadata-plugin</artifactId>
+	<artifactId>maven-metadata-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<licenses>
