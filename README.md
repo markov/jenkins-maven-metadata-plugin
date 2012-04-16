@@ -13,7 +13,11 @@ There are also several options to provide default values which will also be eval
 -	LATEST - will evaluate to the version marked as LATEST in the [repository metadata][] for the configured artifact.
 	The versionFilter even if defined is ignored for this default value.
 
-[repository metadata]: http://docs.codehaus.org/display/MAVEN/Repository+Metadata
+This plugin does not download anything but rather sets build environment variables describing the artifact and
+where it can be downloaded from.
+
+If all you need to do is download an artifact from a repository and use it during your build you can consider using the
+[repository connector][] plugin instead.
 
 # REQUIREMENTS: #
 
@@ -46,3 +50,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+[repository metadata]: http://docs.codehaus.org/display/MAVEN/Repository+Metadata
+[repository connector]: https://wiki.jenkins-ci.org/display/JENKINS/Repository+Connector+Plugin
