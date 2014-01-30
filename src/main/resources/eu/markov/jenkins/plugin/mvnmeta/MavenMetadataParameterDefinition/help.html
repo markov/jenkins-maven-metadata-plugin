@@ -23,22 +23,14 @@
   -->
 
 <div>
-  When used, this parameter will display a field at build-time so that the user
-  is able to select a Subversion tag from which to create the working copy for
-  this project.<br/>
-  Once the two fields <strong>Name</strong> and <strong>Repository URL</strong>
-  are set, you must (1) ensure the job uses <strong>Subversion</strong> and (2)
-  set the <strong>Repository URL</strong> field of <strong>Subversion</strong>
-  by concatenating the two fields of this parameter. For instance, if <strong>
-  Name</strong> is set to <code>SVN_TAG</code> and <strong>Repository URL
-  </strong> is set to <code>https://svn.jenkins-ci.org/tags</code>, then
-  <strong>Subversion</strong>'s <strong>Repository URL</strong> must be set to
-  <code>https://svn.jenkins-ci.org/tags/$SVN_TAG</code>.<br/>
-  Notice that you can set the <strong>Repository URL</strong> field to a Subversion
-  repository root rather than just pointing to a <code>tags</code> dir (ie, you
-  can set it to <code>https://svn.jenkins-ci.org</code> rather than
-  <code>https://svn.jenkins-ci.org/tags</code>). In that case, if this repository
-  root contains the <code>trunk</code>, <code>branches</code> and <code>tags</code>
-  folders, then the dropdown will allow the user to pick the trunk, or a
-  branch, or a tag.
+  This parameter allows the resolution of maven artifact versions by contacting the repository and reading the <a href="http://docs.codehaus.org/display/MAVEN/Repository+Metadata">maven-metadata.xml</a>.
+  <p/>
+  If you named your parameter "MY_JAR" and have configured all values correctly. Then the following parameters will be set for the build step:
+  <ul>
+    <li>MY_JAR_VERSION - the version you selected in the dropdown or that was selected as part of an automated build</li>
+    <li>MY_JAR_ARTIFACT_URL - the full URL to the actual artifact selected. You can use something like "wget" to download that artifact and do something with it.</li>
+    <li>MY_JAR_GROUP_ID - echoes back your configuration</li>
+    <li>MY_JAR_ARTIFACT_ID - echoes back your configuration</li>
+    <li>MY_JAR_PACKAGING - echoes back your configuration</li>
+  </ul>
 </div>
