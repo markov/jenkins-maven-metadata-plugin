@@ -82,10 +82,13 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   private final String         versionFilter;
   private final SortOrder      sortOrder;
   private final String         maxVersions;
+   
+  private final String         username;
+  private final String         password;
 
   @DataBoundConstructor
   public MavenMetadataParameterDefinition(String name, String description, String repoBaseUrl, String groupId,
-      String artifactId, String packaging, String versionFilter, String sortOrder, String defaultValue, String maxVersions) {
+      String artifactId, String packaging, String versionFilter, String sortOrder, String defaultValue, String maxVersions, String username, String password) {
     super(name, description);
     this.repoBaseUrl = Util.removeTrailingSlash(repoBaseUrl);
     this.groupId = groupId;
@@ -95,6 +98,8 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     this.sortOrder = SortOrder.valueOf(sortOrder);
     this.defaultValue = StringUtils.trim(defaultValue);
     this.maxVersions = maxVersions;
+    this.username = username;
+    this.password = password;
   }
 
   public int getMaxVers() {
@@ -194,11 +199,24 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     InputStream input = null;
     try {
       URL url = new URL(getArtifactUrlForPath("maven-metadata.xml"));
+      
+      LOGGER.finest("Requesting metadata from URL: "+url.toExternalForm());
+      
       URLConnection conn = url.openConnection();
+      
       if (StringUtils.isNotBlank(url.getUserInfo())) {
+        LOGGER.finest("Using implicit UserInfo");
         String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
         conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
       }
+      
+      if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {    	  
+    	  LOGGER.finest("Using explicit UserInfo");
+    	  String userpassword = username + ":" + password;
+        String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
+        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);      	  
+      }
+            
       input = conn.getInputStream();
       JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
       Unmarshaller unmarshaller = context.createUnmarshaller();

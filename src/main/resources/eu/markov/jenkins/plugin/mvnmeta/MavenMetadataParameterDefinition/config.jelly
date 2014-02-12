@@ -33,6 +33,12 @@
     <f:entry title="${%Repository Base URL}" field="repoBaseUrl">
         <f:textbox name="parameter.repoBaseUrl" value="${instance.repoBaseUrl}" />
     </f:entry>
+    <f:entry title="${%Repository Username}" field="username">
+        <f:textbox name="parameter.username" value="${instance.username}" />
+    </f:entry>
+    <f:entry title="${%Repository Password}" field="password">
+        <f:password name="parameter.password" value="${instance.password}" />
+    </f:entry>
     <f:entry title="${%Artifact Group ID}" field="groupId">
         <f:textbox name="parameter.groupId" value="${instance.groupId}" />
     </f:entry>
