@@ -28,6 +28,7 @@ import hudson.Util;
 import hudson.model.ParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
+import hudson.cli.CLICommand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -132,6 +133,17 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return "jar";
   }
 
+  private ParameterValue createValue(String version) {
+    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version, readPackaging(),
+        getFullArtifactUrl(getGroupId(), getArtifactId(), version, readPackaging()));
+  }
+
+  // Create a parameter value from the string given in the CLI.
+  @Override
+  public ParameterValue createValue(CLICommand command, String version) {
+    return createValue(version);
+  }
+
   // This method is invoked from a GET or POST HTTP request
   @Override
   public ParameterValue createValue(StaplerRequest req) {
@@ -142,8 +154,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
     String version = values[0];
 
-    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version, readPackaging(),
-        getFullArtifactUrl(getGroupId(), getArtifactId(), version, readPackaging()));
+    return createValue(version);
   }
 
   // This method is invoked when the user clicks on the "Build" button of Hudon's GUI
