@@ -1,6 +1,4 @@
 update the plugin wiki with screenshots https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin
-fix copy-pasted translation
-add username / password as separate input fields secret input field for password
 add more description about each property
 make it clear this uses no maven dependencies, but just the metadata published to a repository.
 
