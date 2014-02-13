@@ -27,7 +27,7 @@ Built and tested against Jenkins 1.447.
 
 # LICENSE & AUTHOR: #
 
-Author:: Georgi "Gesh" Markov (<gesh@markov.eu>)
+Author:: Georgi "Gesh" Markov (gesh[at]markov.eu)
 
 Copyright:: 2012, AKQA, Georgi "Gesh" Markov
 
