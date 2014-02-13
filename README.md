@@ -25,11 +25,15 @@ If all you need to do is download an artifact from a repository and use it durin
 
 Built and tested against Jenkins 1.447.
 
-# LICENSE & AUTHOR: #
+# AUTHOR & CONTRIBUTORS: #
 
-Author:: Georgi "Gesh" Markov (gesh[at]markov.eu)
+Author:: Georgi "Gesh" Markov [@markov][https://github.com/markov]
 
-Copyright:: 2012, AKQA, Georgi "Gesh" Markov
+Contributors:: [@barclay-reg][https://github.com/barclay-reg], [@imod][https://github.com/imod]
+
+# COPYRIGHT & LICENSE: #
+
+Copyright:: 2014, Georgi "Gesh" Markov
 
 Licensed under the MIT License
 
