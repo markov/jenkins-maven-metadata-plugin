@@ -27,9 +27,9 @@ Built and tested against Jenkins 1.447.
 
 # AUTHOR & CONTRIBUTORS: #
 
-Author:: Georgi "Gesh" Markov [@markov][https://github.com/markov]
+Author:: Georgi "Gesh" Markov [@markov](https://github.com/markov)
 
-Contributors:: [@barclay-reg][https://github.com/barclay-reg], [@imod][https://github.com/imod]
+Contributors:: [@barclay-reg](https://github.com/barclay-reg), [@imod](https://github.com/imod)
 
 # COPYRIGHT & LICENSE: #
 
