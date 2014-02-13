@@ -1,107 +1,121 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.jenkins-ci.plugins</groupId>
-		<artifactId>plugin</artifactId>
-		<version>1.447</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.447</version>
+    </parent>
 
-	<groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
-	<artifactId>maven-metadata-plugin</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
-	<packaging>hpi</packaging>
+    <groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
+    <artifactId>maven-metadata-plugin</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
+    <packaging>hpi</packaging>
 
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin</url>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin</url>
 
-	<scm>
-		<connection>scm:git:ssh://github.com/jenkinsci/maven-metadata-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/maven-metadata-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/maven-metadata-plugin</url>
-	</scm>
+    <scm>
+        <connection>scm:git:ssh://github.com/jenkinsci/maven-metadata-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/maven-metadata-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/maven-metadata-plugin</url>
+    </scm>
 
-	<developers>
-		<developer>
-			<id>markov</id>
-			<email>gesh@markov.eu</email>
-			<name>Georgi "Gesh" Markov</name>
-			<timezone>CET</timezone>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>markov</id>
+            <email>gesh@markov.eu</email>
+            <name>Georgi "Gesh" Markov</name>
+            <timezone>CET</timezone>
+        </developer>
+    </developers>
 
-	<licenses>
-		<license>
-			<name>MIT license</name>
-			<comments>All source code is under the MIT license.</comments>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>MIT license</name>
+            <comments>All source code is under the MIT license.</comments>
+        </license>
+    </licenses>
 
-	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the 
-		artifacts that we need -->
-	<repositories>
-		<repository>
-			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
-		</repository>
-	</repositories>
+    <!-- get artifacts through repo.jenkins-ci.org -->
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<compilerVersion>1.6</compilerVersion>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.kohsuke</groupId>
+                    <artifactId>access-modifier-checker</artifactId>
+                    <version>1.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerVersion>1.6</compilerVersion>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<profiles>
-		<profile>
-			<id>lombok-needs-tools-jar</id>
-			<activation>
-				<file>
-					<exists>${java.home}/../lib/tools.jar</exists>
-				</file>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.projectlombok</groupId>
-						<artifactId>lombok-maven-plugin</artifactId>
-						<version>0.10.8.0</version>
-						<dependencies>
-							<dependency>
-								<groupId>sun.jdk</groupId>
-								<artifactId>tools</artifactId>
-								<version>1.6</version>
-								<scope>system</scope>
-								<systemPath>${java.home}/../lib/tools.jar</systemPath>
-							</dependency>
-						</dependencies>
-						<executions>
-							<execution>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>delombok</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+    <profiles>
+        <profile>
+            <id>lombok-needs-tools-jar</id>
+            <activation>
+                <file>
+                    <exists>${java.home}/../lib/tools.jar</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                        <version>0.10.8.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>sun.jdk</groupId>
+                                <artifactId>tools</artifactId>
+                                <version>1.6</version>
+                                <scope>system</scope>
+                                <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>delombok</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
