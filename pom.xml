@@ -6,6 +6,10 @@
         <version>1.447</version>
     </parent>
 
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
+
     <groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
     <artifactId>maven-metadata-plugin</artifactId>
     <version>1.1.1-SNAPSHOT</version>
@@ -53,26 +57,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lombok.version>1.12.4</lombok.version>
+        <lombok.version>1.12.2</lombok.version>
+        <lombok.plugin.version>1.12.2.0</lombok.plugin.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <pluginManagement>
@@ -102,6 +89,29 @@
 
     <profiles>
         <profile>
+            <id>for-development</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>${lombok.version}</version>
+                        <scope>provided</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>lombok-needs-tools-jar</id>
             <activation>
                 <file>
@@ -113,7 +123,7 @@
                     <plugin>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok-maven-plugin</artifactId>
-                        <version>${lombok.version}</version>
+                        <version>${lombok.plugin.version}</version>
                         <dependencies>
                             <dependency>
                                 <groupId>sun.jdk</groupId>
