@@ -34,7 +34,7 @@ Contributors:: [@barclay-reg](https://github.com/barclay-reg),
 
 # COPYRIGHT & LICENSE: #
 
-Copyright:: 2014, Georgi "Gesh" Markov
+Copyright:: 2012-2014, Georgi "Gesh" Markov
 
 Licensed under the MIT License
 
