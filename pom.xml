@@ -12,7 +12,7 @@
 
     <groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
     <artifactId>maven-metadata-plugin</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
     <packaging>hpi</packaging>
     <name>Maven Metadata Plugin for Jenkins CI server</name>
 
