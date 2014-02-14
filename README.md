@@ -1,6 +1,6 @@
 # DESCRIPTION: #
 
-This plugin adds a new build parameter type - maven-metadata. If you select this type and give in a `repositoryURL`,
+This plugin adds a new build parameter type - [maven-metadata][]. If you select this type and give in a `repositoryURL`,
 `groupId` and `artifactId` the plugin will check for that artifact at the given repository and let whoever started the
 build select a version of the artifact to bind as a build parameter.
 
@@ -58,3 +58,4 @@ THE SOFTWARE.
 
 [repository metadata]: http://docs.codehaus.org/display/MAVEN/Repository+Metadata
 [repository connector]: https://wiki.jenkins-ci.org/display/JENKINS/Repository+Connector+Plugin
+[maven-metadata]: https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin
