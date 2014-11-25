@@ -292,6 +292,54 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return getFullArtifactUrl(value.getGroupId(), value.getArtifactId(), value.getVersion(), value.getPackaging());
   }
 
+  private String resolveSnapshotRevision(String groupId, String artifactId, String version, String packaging) {
+    InputStream input = null;
+    try {
+      URL url = new URL(getArtifactUrlForPath(version+"/maven-metadata.xml"));
+
+      LOGGER.finest("Requesting metadata from URL: "+url.toExternalForm());
+
+      URLConnection conn = url.openConnection();
+
+      if (StringUtils.isNotBlank(url.getUserInfo())) {
+        LOGGER.finest("Using implicit UserInfo");
+        String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
+        conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
+      }
+
+      if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
+        LOGGER.finest("Using explicit UserInfo");
+        String userpassword = username + ":" + password;
+        String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
+        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
+      }
+
+      input = conn.getInputStream();
+      JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
+      Unmarshaller unmarshaller = context.createUnmarshaller();
+      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(input);
+
+      if (metadata.versioning.snapshotVersions != null) {
+        for (MavenMetadataVersions.SnapshotVersion snapshot : metadata.versioning.snapshotVersions) {
+          if (packaging.equals(snapshot.extension)){
+            return snapshot.value;
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, "Could not parse maven-metadata.xml", e);
+    } finally {
+      try {
+        if (input != null)
+          input.close();
+      } catch (IOException e) {
+        // ignore
+      }
+    }
+    // we did not find anything, return the original value
+    return version;
+  }
+
   /**
    * Creates a full URL based on the given parameters and the {@link #getRepoBaseUrl()} of this instance.
    * 
@@ -306,6 +354,11 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
    * @return the full URL for the given version.
    */
   private String getFullArtifactUrl(String groupId, String artifactId, String version, String packaging) {
+    // here we need to be clever if the repository handles multiple versions for a snapshot
+    if (version.contains("SNAPSHOT")) {
+      // ensure we have the correct url for SNAPSHOTS
+      version = resolveSnapshotRevision(groupId, artifactId, version, packaging);
+    }
     StringBuilder versionBuilder = new StringBuilder(getArtifactUrlForPath(version));
     versionBuilder.append("/").append(artifactId);
     versionBuilder.append("-").append(version);

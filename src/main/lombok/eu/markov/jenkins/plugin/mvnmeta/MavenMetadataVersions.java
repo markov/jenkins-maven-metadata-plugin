@@ -52,8 +52,40 @@ public class MavenMetadataVersions {
     @XmlElement
     String       latest;
 
+    @XmlElement
+    Snapshot     snapshot;
+
+    @XmlElement
+    String       lastUpdated;
+
     @XmlElementWrapper(name = "versions")
     @XmlElement(name = "version")
     List<String> versions = new ArrayList<String>();
+
+    @XmlElementWrapper(name = "snapshotVersions")
+    @XmlElement(name = "snapshotVersion")
+    List<SnapshotVersion> snapshotVersions = new ArrayList<SnapshotVersion>();
+  }
+
+  @ToString
+  public static class Snapshot {
+    @XmlElement
+    String       timestamp;
+
+    @XmlElement
+    String       buildNumber;
+  }
+
+  @ToString
+  public static class SnapshotVersion {
+
+    @XmlElement
+    String       extension;
+
+    @XmlElement
+    String       value;
+
+    @XmlElement
+    String       updated;
   }
 }
