@@ -215,20 +215,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
       LOGGER.finest("Requesting metadata from URL: "+url.toExternalForm());
 
-      URLConnection conn = url.openConnection();
-
-      if (StringUtils.isNotBlank(url.getUserInfo())) {
-        LOGGER.finest("Using implicit UserInfo");
-        String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
-        conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
-      }
-
-      if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
-    	  LOGGER.finest("Using explicit UserInfo");
-    	  String userpassword = username + ":" + password;
-        String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
-        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
-      }
+      URLConnection conn = prepareConnection(url);
 
       input = conn.getInputStream();
       JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
@@ -302,28 +289,13 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
       LOGGER.finest("Requesting metadata from URL: "+url.toExternalForm());
 
-      URLConnection conn = url.openConnection();
-
-      if (StringUtils.isNotBlank(url.getUserInfo())) {
-        LOGGER.finest("Using implicit UserInfo");
-        String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
-        conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
-      }
-
-      if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
-        LOGGER.finest("Using explicit UserInfo");
-        String userpassword = username + ":" + password;
-        String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
-        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
-      }
+      URLConnection conn = prepareConnection(url);
 
       input = conn.getInputStream();
-      byte[] data = IOUtils.toByteArray(input);
 
-      LOGGER.finest("got " + new String(data));
       JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
       Unmarshaller unmarshaller = context.createUnmarshaller();
-      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(new ByteArrayInputStream(data));
+      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(input);
 
       if (metadata.versioning.snapshot != null && !StringUtils.isEmpty(metadata.versioning.snapshot.timestamp)) {
         return version.replaceAll("SNAPSHOT", "") +  metadata.versioning.snapshot.timestamp + "-" + metadata.versioning.snapshot.buildNumber;
@@ -341,6 +313,23 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     // we did not find anything, return the original value
     LOGGER.finest("No match found, using default");
     return version;
+  }
+
+  private URLConnection prepareConnection(URL url) throws IOException {
+    URLConnection conn = url.openConnection();
+    if (StringUtils.isNotBlank(url.getUserInfo())) {
+      LOGGER.finest("Using implicit UserInfo");
+      String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
+      conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
+    }
+
+    if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
+      LOGGER.finest("Using explicit UserInfo");
+      String userpassword = username + ":" + password;
+      String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
+      conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
+    }
+    return conn;
   }
 
   /**
