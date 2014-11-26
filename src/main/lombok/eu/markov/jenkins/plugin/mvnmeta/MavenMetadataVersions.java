@@ -83,6 +83,9 @@ public class MavenMetadataVersions {
     String       extension;
 
     @XmlElement
+    String       classifier;
+
+    @XmlElement
     String       value;
 
     @XmlElement

@@ -30,6 +30,7 @@ import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
 import hudson.cli.CLICommand;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -50,6 +51,7 @@ import lombok.Getter;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jvnet.localizer.ResourceBundleHolder;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -57,8 +59,8 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * 
- * 
+ *
+ *
  * @author Gesh Markov &lt;gesh@markov.eu&gt;
  */
 @Getter
@@ -83,7 +85,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   private final String         versionFilter;
   private final SortOrder      sortOrder;
   private final String         maxVersions;
-   
+
   private final String         username;
   private final String         password;
 
@@ -210,24 +212,24 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     InputStream input = null;
     try {
       URL url = new URL(getArtifactUrlForPath("maven-metadata.xml"));
-      
+
       LOGGER.finest("Requesting metadata from URL: "+url.toExternalForm());
-      
+
       URLConnection conn = url.openConnection();
-      
+
       if (StringUtils.isNotBlank(url.getUserInfo())) {
         LOGGER.finest("Using implicit UserInfo");
         String encodedAuth = new String(Base64.encodeBase64(url.getUserInfo().getBytes(UTF8)), UTF8);
         conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
       }
-      
-      if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {    	  
+
+      if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
     	  LOGGER.finest("Using explicit UserInfo");
     	  String userpassword = username + ":" + password;
         String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
-        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);      	  
+        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
       }
-            
+
       input = conn.getInputStream();
       JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
       Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -274,7 +276,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   /**
    * Creates a full URL based on the given path parameter and the {@link #repoBaseUrl}, {@link #groupId} and {@link #artifactId}
    * of this instance.
-   * 
+   *
    * @param path
    *          the path for which to create the full URL.
    * @return the full URL for the given version.
@@ -292,9 +294,10 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return getFullArtifactUrl(value.getGroupId(), value.getArtifactId(), value.getVersion(), value.getPackaging());
   }
 
-  private String resolveSnapshotRevision(String groupId, String artifactId, String version, String packaging) {
+  private String resolveSnapshotRevision(String version) {
     InputStream input = null;
     try {
+      LOGGER.finest("Resolving SNAPSHOT version if any...");
       URL url = new URL(getArtifactUrlForPath(version+"/maven-metadata.xml"));
 
       LOGGER.finest("Requesting metadata from URL: "+url.toExternalForm());
@@ -315,16 +318,15 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
       }
 
       input = conn.getInputStream();
+      byte[] data = IOUtils.toByteArray(input);
+
+      LOGGER.finest("got " + new String(data));
       JAXBContext context = JAXBContext.newInstance(MavenMetadataVersions.class);
       Unmarshaller unmarshaller = context.createUnmarshaller();
-      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(input);
+      MavenMetadataVersions metadata = (MavenMetadataVersions) unmarshaller.unmarshal(new ByteArrayInputStream(data));
 
-      if (metadata.versioning.snapshotVersions != null) {
-        for (MavenMetadataVersions.SnapshotVersion snapshot : metadata.versioning.snapshotVersions) {
-          if (packaging.equals(snapshot.extension)){
-            return snapshot.value;
-          }
-        }
+      if (metadata.versioning.snapshot != null && !StringUtils.isEmpty(metadata.versioning.snapshot.timestamp)) {
+        return version.replaceAll("SNAPSHOT", "") +  metadata.versioning.snapshot.timestamp + "-" + metadata.versioning.snapshot.buildNumber;
       }
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Could not parse maven-metadata.xml", e);
@@ -337,12 +339,13 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
       }
     }
     // we did not find anything, return the original value
+    LOGGER.finest("No match found, using default");
     return version;
   }
 
   /**
    * Creates a full URL based on the given parameters and the {@link #getRepoBaseUrl()} of this instance.
-   * 
+   *
    * @param groupId
    *          the group to use for the full version
    * @param artifactId
@@ -355,13 +358,14 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
    */
   private String getFullArtifactUrl(String groupId, String artifactId, String version, String packaging) {
     // here we need to be clever if the repository handles multiple versions for a snapshot
+    String artifactVersion = version;
     if (version.contains("SNAPSHOT")) {
       // ensure we have the correct url for SNAPSHOTS
-      version = resolveSnapshotRevision(groupId, artifactId, version, packaging);
+      artifactVersion = resolveSnapshotRevision(version);
     }
     StringBuilder versionBuilder = new StringBuilder(getArtifactUrlForPath(version));
     versionBuilder.append("/").append(artifactId);
-    versionBuilder.append("-").append(version);
+    versionBuilder.append("-").append(artifactVersion);
     versionBuilder.append(".").append(packaging);
 
     return versionBuilder.toString();
