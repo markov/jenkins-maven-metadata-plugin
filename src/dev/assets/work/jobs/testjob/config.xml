@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
+          <name>ARTIFACT</name>
+          <description></description>
+          <repoBaseUrl>http://repo.jenkins-ci.org/public</repoBaseUrl>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${project.artifactId}</artifactId>
+          <packaging>${project.packaging}</packaging>
+          <defaultValue></defaultValue>
+          <versionFilter></versionFilter>
+          <sortOrder>DESC</sortOrder>
+          <maxVersions></maxVersions>
+          <username></username>
+          <password></password>
+        </eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo &quot;Selected artifact:&quot;
+echo &quot;  Group ID:     ${ARTIFACT_GROUP_ID}&quot;
+echo &quot;  Artifact ID:  ${ARTIFACT_ARTIFACT_ID}&quot;
+echo &quot;  Version:      ${ARTIFACT_VERSION}&quot;
+echo &quot;  Type:         ${ARTIFACT_PACKAGING}&quot;
+echo &quot;  Download URL: ${ARTIFACT_ARTIFACT_URL}&quot;
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
