@@ -27,7 +27,6 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.Hudson;
-import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
@@ -58,6 +57,7 @@ import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.binary.Base64;
@@ -73,8 +73,8 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Gesh Markov &lt;gesh@markov.eu&gt;
  */
 @Getter
-public class MavenMetadataParameterDefinition extends ParameterDefinition {
-  private static final long    serialVersionUID     = -4595893939123446454L;
+public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefinitionBackwardCompatibility {
+  private static final long    serialVersionUID     = -4776115854285459316L;
 
   private static final String  DEFAULT_FIRST        = "FIRST";
   private static final String  DEFAULT_LAST         = "LAST";
@@ -95,7 +95,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   private final SortOrder      sortOrder;
   private final String         maxVersions;
 
-  private final String         credentialsId;
+  private @Setter String       credentialsId;
 
   @DataBoundConstructor
   public MavenMetadataParameterDefinition(String name, String description, String repoBaseUrl, String groupId,
@@ -344,7 +344,8 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return conn;
   }
 
-  private UsernamePasswordCredentials findCredentialsByCredentialsId() {
+  @Override
+  protected UsernamePasswordCredentials findCredentialsByCredentialsId() {
     List<UsernamePasswordCredentials> credentials =
         CredentialsProvider.lookupCredentials(UsernamePasswordCredentials.class, Hudson.getInstance(), ACL.SYSTEM, new DomainRequirement());
     CredentialsMatcher credentialsIdMatcher = CredentialsMatchers.withId(this.credentialsId);
