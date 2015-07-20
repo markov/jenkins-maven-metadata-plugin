@@ -17,8 +17,7 @@
           <versionFilter></versionFilter>
           <sortOrder>DESC</sortOrder>
           <maxVersions></maxVersions>
-          <username></username>
-          <password></password>
+          <credentialsId></credentialsId>
         </eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
