@@ -62,6 +62,14 @@
         <lombok.plugin.version>1.12.2.0</lombok.plugin.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>credentials</artifactId>
+            <version>1.9.1</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
