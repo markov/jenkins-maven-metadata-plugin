@@ -64,4 +64,13 @@
           </j:forEach>
         </select>
     </f:entry> 
+    <f:entry title="${%Current Artifact Info URL}" field="currentArtifactInfoUrl">
+        <f:textbox name="parameter.currentArtifactInfoUrl" value="${instance.currentArtifactInfoUrl}" />
+    </f:entry>
+    <f:entry title="${%Current Artifact Info Label}" field="currentArtifactInfoLabel">
+        <f:textbox name="parameter.currentArtifactInfoLabel" value="${instance.currentArtifactInfoLabel}" />
+    </f:entry>
+    <f:entry title="${%Current Artifact Info Pattern}" field="currentArtifactInfoPattern">
+        <f:textbox name="parameter.currentArtifactInfoPattern" value="${instance.currentArtifactInfoPattern}" />
+    </f:entry>
 </j:jelly>
