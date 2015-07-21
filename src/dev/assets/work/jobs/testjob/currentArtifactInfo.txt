@@ -1,0 +1,3 @@
+Plugin ID: ${project.artifactId}
+Plugin Version: ${project.version}
+Jenkins Core Version:  ${project.parent.version}

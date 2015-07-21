@@ -17,6 +17,9 @@
           <versionFilter></versionFilter>
           <sortOrder>DESC</sortOrder>
           <maxVersions></maxVersions>
+          <currentArtifactInfoUrl>file://${project.basedir}/work/jobs/testjob/currentArtifactInfo.txt</currentArtifactInfoUrl>
+          <currentArtifactInfoLabel>Currently under development</currentArtifactInfoLabel>
+          <currentArtifactInfoPattern>Plugin Version: ([\S]+)</currentArtifactInfoPattern>
           <credentialsId></credentialsId>
         </eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
       </parameterDefinitions>
