@@ -128,7 +128,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     return versionFilterPattern;
   }
 
-  public String readPackaging() {
+  public String getPackaging() {
     if (StringUtils.isNotBlank(this.packaging)) {
       return this.packaging;
     }
@@ -136,8 +136,8 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   }
 
   private ParameterValue createValue(String version) {
-    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version, readPackaging(),
-        getFullArtifactUrl(getGroupId(), getArtifactId(), version, readPackaging()));
+    return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), version, getPackaging(),
+        getFullArtifactUrl(getGroupId(), getArtifactId(), version, getPackaging()));
   }
 
   // Create a parameter value from the string given in the CLI.
@@ -196,7 +196,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     }
 
     return new MavenMetadataParameterValue(getName(), getDescription(), getGroupId(), getArtifactId(), defaultVersion,
-        readPackaging(), getFullArtifactUrl(getGroupId(), getArtifactId(), defaultVersion, readPackaging()));
+        getPackaging(), getFullArtifactUrl(getGroupId(), getArtifactId(), defaultVersion, getPackaging()));
   }
 
   @Override
