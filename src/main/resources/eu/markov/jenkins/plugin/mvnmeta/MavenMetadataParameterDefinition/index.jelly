@@ -56,7 +56,7 @@
       </j:choose>
       <j:set var="currentArtifactInfo" value="${it.currentArtifactInfo}"/>
       <j:if test="${!currentArtifactInfo.isEmpty()}">
-        <span style="padding-left: 20px;">${it.currentArtifactInfo}</span>
+        <span style="padding-left: 20px;">${currentArtifactInfo}</span>
       </j:if>
     </div>
   </f:entry>
