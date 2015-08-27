@@ -430,14 +430,14 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   public static class DescriptorImpl extends ParameterDescriptor {
 
     public FormValidation doCheckVersionFilter(@QueryParameter String value) {
-      return this.doCheckRegex(value);
+      return doCheckRegex(value);
     }
 
     public FormValidation doCheckCurrentArtifactInfoPattern(@QueryParameter String value) {
-      return this.doCheckRegex(value);
+      return doCheckRegex(value);
     }
 
-    private FormValidation doCheckRegex(String value) {
+    private static FormValidation doCheckRegex(String value) {
       if (StringUtils.isNotBlank(value)) {
         try {
           Pattern.compile(value);
