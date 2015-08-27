@@ -148,35 +148,35 @@ public class MavenMetadataParameterDefinitionTest {
 
     @Test
     public void testGetCurrentArtifactInfoPatternWithCapturingGroup() {
-        this.testGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", "Plugin Version: ([\\S]+)", "My Label: 3.14159");
+        this.executeTestGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", "Plugin Version: ([\\S]+)", "My Label: 3.14159");
     }
 
     @Test
     public void testGetCurrentArtifactInfoPatternWithoutCapturingGroup() {
-        this.testGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", "Plugin Version: [\\S]+", "My Label: Plugin Version: 3.14159");
+        this.executeTestGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", "Plugin Version: [\\S]+", "My Label: Plugin Version: 3.14159");
     }
 
     @Test
     public void testGetCurrentArtifactInfoWithNonmatchingPattern() {
-        this.testGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", "Not Matching: [\\S]+", "My Label: Artifact ID: my-artifact\nPlugin Version: 3.14159\nJenkins Version:  42\n");
+        this.executeTestGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", "Not Matching: [\\S]+", "My Label: Artifact ID: my-artifact\nPlugin Version: 3.14159\nJenkins Version:  42\n");
     }
 
     @Test
     public void testGetCurrentArtifactInfoWithoutPattern() {
-        this.testGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", null, "My Label: Artifact ID: my-artifact\nPlugin Version: 3.14159\nJenkins Version:  42\n");
+        this.executeTestGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, "My Label", null, "My Label: Artifact ID: my-artifact\nPlugin Version: 3.14159\nJenkins Version:  42\n");
     }
 
     @Test
     public void testGetCurrentArtifactInfoPatternWithDefaultLabel() {
-        this.testGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, null, "Plugin Version: ([\\S]+)", "Currently used artifact: 3.14159");
+        this.executeTestGetCurrentArtifactInfoPattern(CURRENT_ARTIFACT_INFO_URL, null, "Plugin Version: ([\\S]+)", "Currently used artifact: 3.14159");
     }
 
     @Test
     public void testGetCurrentArtifactInfoPatternWithoutUrl() {
-        this.testGetCurrentArtifactInfoPattern(null, "My Label", "Plugin Version: ([\\S]+)", "");
+        this.executeTestGetCurrentArtifactInfoPattern(null, "My Label", "Plugin Version: ([\\S]+)", "");
     }
 
-    private void testGetCurrentArtifactInfoPattern(String url, String label, String pattern, String expectedResult) {
+    private void executeTestGetCurrentArtifactInfoPattern(String url, String label, String pattern, String expectedResult) {
         MavenMetadataParameterDefinition definition =
             new MavenMetadataParameterDefinition("", "", getLocalWebServerUrl(), "", "", "", "", "DESC", "", "", url, label, pattern, "", "");
         assertEquals(expectedResult, definition.getCurrentArtifactInfo());
