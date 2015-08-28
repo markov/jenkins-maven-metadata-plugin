@@ -25,12 +25,11 @@ package eu.markov.jenkins.plugin.mvnmeta;
 
 import hudson.Extension;
 import hudson.Util;
-import hudson.model.ParameterValue;
-import hudson.model.ParameterDefinition;
-import hudson.util.FormValidation;
 import hudson.cli.CLICommand;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
+import hudson.util.FormValidation;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -65,7 +65,7 @@ import org.kohsuke.stapler.StaplerRequest;
  */
 @Getter
 public class MavenMetadataParameterDefinition extends ParameterDefinition {
-  private static final long    serialVersionUID     = -3820719539319589460L;
+  private static final long    serialVersionUID     = -7884973637623378220L;
 
   private static final String  DEFAULT_FIRST        = "FIRST";
   private static final String  DEFAULT_LAST         = "LAST";
@@ -85,13 +85,17 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   private final String         versionFilter;
   private final SortOrder      sortOrder;
   private final String         maxVersions;
+  private final String         currentArtifactInfoUrl;
+  private final String         currentArtifactInfoLabel;
+  private final String         currentArtifactInfoPattern;
 
   private final String         username;
   private final String         password;
 
   @DataBoundConstructor
   public MavenMetadataParameterDefinition(String name, String description, String repoBaseUrl, String groupId,
-      String artifactId, String packaging, String versionFilter, String sortOrder, String defaultValue, String maxVersions, String username, String password) {
+      String artifactId, String packaging, String versionFilter, String sortOrder, String defaultValue, String maxVersions,
+      String currentArtifactInfoUrl, String currentArtifactInfoLabel, String currentArtifactInfoPattern, String username, String password) {
     super(name, description);
     this.repoBaseUrl = Util.removeTrailingSlash(repoBaseUrl);
     this.groupId = groupId;
@@ -101,6 +105,9 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     this.sortOrder = SortOrder.valueOf(sortOrder);
     this.defaultValue = StringUtils.trim(defaultValue);
     this.maxVersions = maxVersions;
+    this.currentArtifactInfoUrl = currentArtifactInfoUrl;
+    this.currentArtifactInfoLabel = currentArtifactInfoLabel;
+    this.currentArtifactInfoPattern = currentArtifactInfoPattern;
     this.username = username;
     this.password = password;
   }
@@ -206,6 +213,55 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
   public List<String> getVersions() {
     return getArtifactMetadata().versioning.versions;
+  }
+
+  public String getCurrentArtifactInfo() {
+    StringBuilder currentArtifactInfoBuilder = new StringBuilder("");
+
+    if (StringUtils.isNotBlank(this.currentArtifactInfoUrl)) {
+
+      if (StringUtils.isBlank(this.currentArtifactInfoLabel)) {
+        currentArtifactInfoBuilder.append("Currently used artifact");
+      } else {
+        currentArtifactInfoBuilder.append(this.currentArtifactInfoLabel);
+      }
+      currentArtifactInfoBuilder.append(": ");
+
+      try {
+        currentArtifactInfoBuilder.append(this.getCurrentArtifactInfoInternal());
+      } catch (IOException ioe) {
+        LOGGER.log(Level.WARNING, "Request of current artifact info failed", ioe);
+        currentArtifactInfoBuilder.append("(Request failed)");
+      }
+    }
+
+    return currentArtifactInfoBuilder.toString();
+  }
+
+  private String getCurrentArtifactInfoInternal() throws IOException {
+    String currentArtifactInfo;
+
+    URL url = new URL(this.currentArtifactInfoUrl);
+
+    LOGGER.finest("Requesting current artifact info from URL: " + url.toExternalForm());
+
+    URLConnection connection = url.openConnection();
+    InputStream inputStream = connection.getInputStream();
+    String contentEncoding = connection.getContentEncoding();
+    currentArtifactInfo = IOUtils.toString(inputStream, contentEncoding);
+
+    // When a pattern is configured, use the first match instead of the whole response.
+    if (StringUtils.isNotBlank(this.currentArtifactInfoPattern)) {
+      Pattern pattern = Pattern.compile(this.currentArtifactInfoPattern);
+      Matcher matcher = pattern.matcher(currentArtifactInfo);
+      if (matcher.find()) {
+        // Use only the content of the patterns' first capturing group.
+        // Use the whole match if the pattern doesn't define a caturing group.
+        currentArtifactInfo = matcher.group(Math.min(matcher.groupCount(), 1));
+      }
+    }
+
+    return currentArtifactInfo;
   }
 
   private MavenMetadataVersions getArtifactMetadata() {
@@ -374,6 +430,14 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   public static class DescriptorImpl extends ParameterDescriptor {
 
     public FormValidation doCheckVersionFilter(@QueryParameter String value) {
+      return doCheckRegex(value);
+    }
+
+    public FormValidation doCheckCurrentArtifactInfoPattern(@QueryParameter String value) {
+      return doCheckRegex(value);
+    }
+
+    private static FormValidation doCheckRegex(String value) {
       if (StringUtils.isNotBlank(value)) {
         try {
           Pattern.compile(value);
