@@ -26,9 +26,11 @@ package eu.markov.jenkins.plugin.mvnmeta;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
-import hudson.model.ParameterDefinition;
+import hudson.model.Hudson;
 import hudson.model.ParameterValue;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +49,16 @@ import java.util.regex.PatternSyntaxException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import com.cloudbees.plugins.credentials.CredentialsMatcher;
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+
 import lombok.Getter;
+import lombok.Setter;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.binary.Base64;
@@ -64,8 +75,8 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Gesh Markov &lt;gesh@markov.eu&gt;
  */
 @Getter
-public class MavenMetadataParameterDefinition extends ParameterDefinition {
-  private static final long    serialVersionUID     = -7884973637623378220L;
+public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefinitionBackwardCompatibility {
+  private static final long    serialVersionUID     = -4776115854285459316L;
 
   private static final String  DEFAULT_FIRST        = "FIRST";
   private static final String  DEFAULT_LAST         = "LAST";
@@ -89,13 +100,12 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
   private final String         currentArtifactInfoLabel;
   private final String         currentArtifactInfoPattern;
 
-  private final String         username;
-  private final String         password;
+  private @Setter String       credentialsId;
 
   @DataBoundConstructor
   public MavenMetadataParameterDefinition(String name, String description, String repoBaseUrl, String groupId,
       String artifactId, String packaging, String versionFilter, String sortOrder, String defaultValue, String maxVersions,
-      String currentArtifactInfoUrl, String currentArtifactInfoLabel, String currentArtifactInfoPattern, String username, String password) {
+      String currentArtifactInfoUrl, String currentArtifactInfoLabel, String currentArtifactInfoPattern, String credentialsId) {
     super(name, description);
     this.repoBaseUrl = Util.removeTrailingSlash(repoBaseUrl);
     this.groupId = groupId;
@@ -108,8 +118,7 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
     this.currentArtifactInfoUrl = currentArtifactInfoUrl;
     this.currentArtifactInfoLabel = currentArtifactInfoLabel;
     this.currentArtifactInfoPattern = currentArtifactInfoPattern;
-    this.username = username;
-    this.password = password;
+    this.credentialsId = credentialsId;
   }
 
   public int getMaxVers() {
@@ -379,13 +388,26 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
       conn.addRequestProperty("Authorization", "Basic " + encodedAuth);
     }
 
-    if (StringUtils.isNotBlank(this.username) && StringUtils.isNotBlank(this.password)) {
+    if (StringUtils.isNotBlank(this.credentialsId)) {
       LOGGER.finest("Using explicit UserInfo");
-      String userpassword = username + ":" + password;
-      String encodedAuthorization = new String(Base64.encodeBase64( userpassword.getBytes(UTF8)), UTF8 );
-      conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
+      UsernamePasswordCredentials credentials = this.findCredentialsByCredentialsId();
+      if (credentials == null) {
+        LOGGER.warning("Cannot resolve credentials with ID " + this.credentialsId);
+      } else {
+        String userpassword = credentials.getUsername() + ":" + credentials.getPassword();
+        String encodedAuthorization = new String(Base64.encodeBase64(userpassword.getBytes(UTF8)), UTF8);
+        conn.addRequestProperty("Authorization", "Basic " + encodedAuthorization);
+      }
     }
     return conn;
+  }
+
+  @Override
+  protected UsernamePasswordCredentials findCredentialsByCredentialsId() {
+    List<UsernamePasswordCredentials> credentials =
+        CredentialsProvider.lookupCredentials(UsernamePasswordCredentials.class, Hudson.getInstance(), ACL.SYSTEM, new DomainRequirement());
+    CredentialsMatcher credentialsIdMatcher = CredentialsMatchers.withId(this.credentialsId);
+    return CredentialsMatchers.firstOrNull(credentials, credentialsIdMatcher);
   }
 
   /**
@@ -428,6 +450,13 @@ public class MavenMetadataParameterDefinition extends ParameterDefinition {
 
   @Extension
   public static class DescriptorImpl extends ParameterDescriptor {
+
+    public ListBoxModel doFillCredentialsIdItems() {
+      List<StandardCredentials> credentials =
+          CredentialsProvider.lookupCredentials(StandardCredentials.class, Hudson.getInstance(), ACL.SYSTEM, new DomainRequirement());
+      CredentialsMatcher credentialsTypeMatcher = CredentialsMatchers.instanceOf(UsernamePasswordCredentials.class);
+      return new StandardListBoxModel().withEmptySelection().withMatching(credentialsTypeMatcher, credentials);
+    }
 
     public FormValidation doCheckVersionFilter(@QueryParameter String value) {
       return doCheckRegex(value);
