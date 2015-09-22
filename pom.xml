@@ -32,6 +32,12 @@
             <name>Georgi "Gesh" Markov</name>
             <timezone>CET</timezone>
         </developer>
+        <developer>
+            <id>marcrohlfs</id>
+            <email>rohlfs@silpion.de</email>
+            <name>Marc Rohlfs</name>
+            <timezone>CET</timezone>
+        </developer>
     </developers>
 
     <licenses>
