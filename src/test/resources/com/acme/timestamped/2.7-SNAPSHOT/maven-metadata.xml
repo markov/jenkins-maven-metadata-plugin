@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata modelVersion="1.1.0">
     <groupId>com.acme</groupId>
-    <artifactId>classifier</artifactId>
-    <version>3.8-SNAPSHOT</version>
+    <artifactId>main</artifactId>
+    <version>2.7-SNAPSHOT</version>
     <versioning>
         <snapshot>
             <timestamp>20140919.030038</timestamp>
@@ -12,18 +12,17 @@
         <snapshotVersions>
             <snapshotVersion>
                 <extension>war</extension>
-                <value>3.8-20140919.030038-19</value>
+                <value>2.7-20140919.030038-19</value>
                 <updated>20141125100946</updated>
             </snapshotVersion>
             <snapshotVersion>
                 <extension>pom</extension>
-                <value>3.8-20140919.030038-38</value>
+                <value>2.7-20140919.030038-38</value>
                 <updated>20141125100946</updated>
             </snapshotVersion>
             <snapshotVersion>
                 <extension>jar</extension>
-                <classifier>classes</classifier>
-                <value>3.8-20140919.030038-76</value>
+                <value>2.7-20140919.030038-76</value>
                 <updated>20141125100946</updated>
             </snapshotVersion>
         </snapshotVersions>

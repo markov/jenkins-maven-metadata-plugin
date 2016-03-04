@@ -125,8 +125,8 @@ public class MavenMetadataParameterDefinitionTest {
     @Test
     public void testTimestampedSnapshot() {
         MavenMetadataParameterDefinition definition = new MavenMetadataParameterDefinition("variable", "void", getLocalWebServerUrl(), "com.acme", "timestamped", "jar", "", "", "DESC", "null", "10", "", "", "", null);
-        MavenMetadataParameterValue result = (MavenMetadataParameterValue) definition.createValue(null, "3.8-SNAPSHOT");
-        assertTrue(result.getArtifactUrl(), result.getArtifactUrl().endsWith("3.8-20140919.030038-76.jar"));
+        MavenMetadataParameterValue result = (MavenMetadataParameterValue) definition.createValue(null, "2.7-SNAPSHOT");
+        assertTrue(result.getArtifactUrl(), result.getArtifactUrl().endsWith("2.7-20140919.030038-76.jar"));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class MavenMetadataParameterDefinitionTest {
         MavenMetadataParameterDefinition definition = new MavenMetadataParameterDefinition("variable", "void", getLocalWebServerUrl(), "com.acme", "timestamped", "jar", "", "", "ASC", "null", "10", "", "", "", null);
         List<String> versions = definition.getVersions();
         Assert.notEmpty(versions);
-        assertEquals("3.6", versions.get(0));
+        assertEquals("2.5", versions.get(0));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class MavenMetadataParameterDefinitionTest {
         List<String> versions = definition.getVersions();
         Assert.notEmpty(versions);
         assertEquals(2, versions.size());
-        assertEquals("3.8-SNAPSHOT", versions.get(0));
+        assertEquals("2.7-SNAPSHOT", versions.get(0));
     }
 
     

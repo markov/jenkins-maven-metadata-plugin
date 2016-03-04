@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata>
+<metadata modelVersion="1.1.0">
     <groupId>com.acme</groupId>
-    <artifactId>main</artifactId>
-    <version>3.8-SNAPSHOT</version>
+    <artifactId>single</artifactId>
+    <version>1.6-SNAPSHOT</version>
     <versioning>
         <snapshot>
             <buildNumber>1</buildNumber>

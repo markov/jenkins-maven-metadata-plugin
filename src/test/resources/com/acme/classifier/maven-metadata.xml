@@ -1,6 +1,6 @@
 <metadata modelVersion="1.1.0">
     <groupId>com.acme</groupId>
-    <artifactId>timestamped</artifactId>
+    <artifactId>classifier</artifactId>
     <versioning>
         <latest>3.8-SNAPSHOT</latest>
         <release>3.7</release>
