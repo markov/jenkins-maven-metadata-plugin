@@ -12,7 +12,7 @@
 
     <groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
     <artifactId>maven-metadata-plugin</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.4.0</version>
     <packaging>hpi</packaging>
     <name>Maven Metadata Plugin for Jenkins CI server</name>
 
@@ -22,7 +22,7 @@
         <connection>scm:git:ssh://github.com/jenkinsci/maven-metadata-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/jenkinsci/maven-metadata-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/maven-metadata-plugin</url>
-      <tag>HEAD</tag>
+      <tag>maven-metadata-plugin-1.4.0</tag>
   </scm>
 
     <developers>
