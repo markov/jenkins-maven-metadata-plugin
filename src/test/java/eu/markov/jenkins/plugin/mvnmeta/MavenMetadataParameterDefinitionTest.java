@@ -118,8 +118,8 @@ public class MavenMetadataParameterDefinitionTest {
     @Test
     public void testSingleSnapshot() {
         MavenMetadataParameterDefinition definition = new MavenMetadataParameterDefinition("variable", "void", getLocalWebServerUrl(), "com.acme", "single", "jar", "", "", "DESC", "null", "10", "", "", "", null);
-        MavenMetadataParameterValue result = (MavenMetadataParameterValue) definition.createValue(null, "3.8-SNAPSHOT");
-        assertTrue(result.getArtifactUrl(), result.getArtifactUrl().endsWith("3.8-SNAPSHOT.jar"));
+        MavenMetadataParameterValue result = (MavenMetadataParameterValue) definition.createValue(null, "1.6-SNAPSHOT");
+        assertTrue(result.getArtifactUrl(), result.getArtifactUrl().endsWith("1.6-SNAPSHOT.jar"));
     }
 
     @Test
