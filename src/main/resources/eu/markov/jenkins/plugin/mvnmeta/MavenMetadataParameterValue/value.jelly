@@ -23,22 +23,25 @@
   -->
 
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:entry title="${it.name}${it.VERSION_SUFFIX}" description="${it.description}">
-        <f:textbox name="version" value="${it.version}" readonly="true"  />
-    </f:entry>
-    <f:entry title="${it.name}${it.GROUP_ID_SUFFIX}">
-        <f:textbox name="groupId" value="${it.groupId}" readonly="true"  />
-    </f:entry>
-    <f:entry title="${it.name}${it.ARTIFACT_ID_SUFFIX}">
-        <f:textbox name="artifactId" value="${it.artifactId}" readonly="true"  />
-    </f:entry>
-    <f:entry title="${it.name}${it.PACKAGING_SUFFIX}">
-        <f:textbox name="packaging" value="${it.packaging}" readonly="true"  />
-    </f:entry>
-    <f:entry title="${it.name}${it.CLASSIFIER_SUFFIX}">
-        <f:textbox name="classifier" value="${it.classifier}" readonly="true"  />
-    </f:entry>
-    <f:entry title="${it.name}${it.ARTIFACT_URL_SUFFIX}">
-		<a href="${it.artifactUrl}">${it.artifactUrl}</a>
-    </f:entry>
+    <f:section name="parameter">
+        <input type="hidden" name="name" value="${it.name}" />
+        <f:entry title="${it.name}${it.VERSION_SUFFIX}" description="${it.description}">
+            <f:textbox name="version" value="${it.version}" readonly="true" />
+        </f:entry>
+        <f:entry title="${it.name}${it.GROUP_ID_SUFFIX}">
+            <f:textbox name="groupId" value="${it.groupId}" readonly="true" />
+        </f:entry>
+        <f:entry title="${it.name}${it.ARTIFACT_ID_SUFFIX}">
+            <f:textbox name="artifactId" value="${it.artifactId}" readonly="true" />
+        </f:entry>
+        <f:entry title="${it.name}${it.PACKAGING_SUFFIX}">
+            <f:textbox name="packaging" value="${it.packaging}" readonly="true" />
+        </f:entry>
+        <f:entry title="${it.name}${it.CLASSIFIER_SUFFIX}">
+            <f:textbox name="classifier" value="${it.classifier}" readonly="true" />
+        </f:entry>
+        <f:entry title="${it.name}${it.ARTIFACT_URL_SUFFIX}">
+            <a href="${it.artifactUrl}">${it.artifactUrl}</a>
+        </f:entry>
+    </f:section>
 </j:jelly>
