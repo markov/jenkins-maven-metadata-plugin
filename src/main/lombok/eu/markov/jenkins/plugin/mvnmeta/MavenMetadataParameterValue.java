@@ -78,7 +78,10 @@ public class MavenMetadataParameterValue extends ParameterValue {
     this.classifier = classifier;
     this.artifactUrl = artifactUrl;
   }
-
+  @Override
+	public Object getValue() {
+		return getVersion();
+	}
   @Override
   public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
     env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
