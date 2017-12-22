@@ -25,6 +25,7 @@ package eu.markov.jenkins.plugin.mvnmeta;
 
 import hudson.EnvVars;
 import hudson.model.ParameterValue;
+import hudson.model.Run;
 import hudson.model.AbstractBuild;
 import hudson.util.VariableResolver;
 import lombok.Getter;
