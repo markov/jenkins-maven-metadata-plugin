@@ -195,8 +195,7 @@ public class MavenMetadataParameterDefinitionTest {
     }
 
     private void executeTestGetCurrentArtifactInfoPattern(String url, String label, String pattern, String expectedResult) {
-        MavenMetadataParameterDefinition definition =
-            new MavenMetadataParameterDefinition("", "", getLocalWebServerUrl(), "", "", "", "", "", "DESC", "", "", url, label, pattern, null);
-        assertEquals(expectedResult, definition.getCurrentArtifactInfo());
+        String currentArtifactInfo = new MavenMetadataParameterDefinition("", "", getLocalWebServerUrl(), "", "", "", "", "", "DESC", "", "", url, label, pattern, null).getCurrentArtifactInfo().replaceAll("\r", "");
+        assertEquals(expectedResult, currentArtifactInfo);
     }
 }
