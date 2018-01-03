@@ -85,7 +85,7 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
   private static final Pattern MATCH_ALL            = Pattern.compile(".*");
   private static final Charset UTF8                 = Charset.forName("UTF-8");
 
-  private transient int        maxVers              = Integer.MIN_VALUE;
+  private transient Integer    maxVers              = null;
   private transient Pattern    versionFilterPattern = null;
 
   private final String         repoBaseUrl;
@@ -124,13 +124,12 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
   }
 
   public int getMaxVers() {
-    if (this.maxVers == Integer.MIN_VALUE) {
-      int maxVers = Integer.MAX_VALUE;
+    if (this.maxVers == null) {
       try {
-        maxVers = Integer.parseInt(maxVersions);
+        this.maxVers = Integer.parseInt(maxVersions);
       } catch (NumberFormatException e) {
+        this.maxVers = Integer.MAX_VALUE;
       }
-      this.maxVers = maxVers;
     }
     return this.maxVers;
   }
@@ -309,12 +308,7 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
       result.versioning.versions.add("<" + e.getClass().getName() + ": " + e.getMessage() + ">");
       return result;
     } finally {
-      try {
-        if (input != null)
-          input.close();
-      } catch (IOException e) {
-        // ignore
-      }
+      IOUtils.closeQuietly(input);
     }
   }
 
