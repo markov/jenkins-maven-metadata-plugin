@@ -64,9 +64,6 @@ public class MavenMetadataParameterValue extends ParameterValue {
   @Exported
   private String             artifactUrl;
 
-  /**
-   * @param name
-   */
   @DataBoundConstructor
   public MavenMetadataParameterValue(String name, String description, String groupId, String artifactId, String version,
         String packaging, String classifier, String artifactUrl) {

@@ -38,8 +38,6 @@ import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 
-import lombok.Getter;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -51,7 +49,6 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Marc Rohlfs, Silpion IT-Solutions GmbH - <a href="mailto:rohlfs@silpion.de">rohlfs@silpion.de</a>
  */
-@Getter
 @SuppressWarnings("deprecation")
 public abstract class MavenMetadataParameterDefinitionBackwardCompatibility extends ParameterDefinition {
   private static final long serialVersionUID = -694351540106684393L;
@@ -148,4 +145,28 @@ public abstract class MavenMetadataParameterDefinitionBackwardCompatibility exte
   protected abstract String getCredentialsId();
 
   protected abstract void setCredentialsId(final String credentialsId);
+
+  /**
+   * Returns the username.
+   *
+   * @return the username.
+   * @deprecated Migrated to {@link MavenMetadataParameterDefinition#credentialsId}
+   */
+  @Deprecated
+  @SuppressWarnings("all")
+  public String getUsername() {
+    return this.username;
+  }
+
+  /**
+   * Returns the password.
+   *
+   * @return the password.
+   * @deprecated Migrated to {@link MavenMetadataParameterDefinition#credentialsId}
+   */
+  @Deprecated
+  @SuppressWarnings("all")
+  public String getPassword() {
+    return this.password;
+  }
 }
