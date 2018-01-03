@@ -1,29 +1,28 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.609</version>
+        <version>3.2</version>
     </parent>
-
-    <prerequisites>
-        <maven>3.0.4</maven>
-    </prerequisites>
 
     <groupId>eu.markov.jenkins.plugin.mvnmeta</groupId>
     <artifactId>maven-metadata-plugin</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>Maven Metadata Plugin for Jenkins CI server</name>
+    <description>Adds a new build parameter type for resolving artifact versions reading the repository maven-metadata.xml</description>
+    <inceptionYear>2012</inceptionYear>
 
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin</url>
+    <url>https://wiki.jenkins.io/display/JENKINS/Maven+Metadata+Plugin</url>
 
     <scm>
         <connection>scm:git:ssh://github.com/jenkinsci/maven-metadata-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/jenkinsci/maven-metadata-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/maven-metadata-plugin</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <developers>
         <developer>
@@ -63,7 +62,10 @@
     </pluginRepositories>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jenkins.version>2.32.1</jenkins.version>
+        <java.level>8</java.level>
+        <maven.compiler.source>1.${java.level}</maven.compiler.source>
+        <maven.compiler.target>1.${java.level}</maven.compiler.target>
         <lombok.version>1.12.2</lombok.version>
         <lombok.plugin.version>1.12.2.0</lombok.plugin.version>
     </properties>
@@ -88,36 +90,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.kohsuke</groupId>
-                    <artifactId>access-modifier-checker</artifactId>
-                    <version>1.4</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <compilerVersion>1.6</compilerVersion>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <!-- Automatically create the base configuration for the Jenkins development workspace when it doesn't exist. -->
@@ -132,7 +104,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.7</version>
                         <executions>
                             <execution>
                                 <id>workspace-base-configuration</id>
