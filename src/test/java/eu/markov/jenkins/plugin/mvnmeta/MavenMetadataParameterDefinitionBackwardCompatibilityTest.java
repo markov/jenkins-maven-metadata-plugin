@@ -23,8 +23,8 @@
  */
 package eu.markov.jenkins.plugin.mvnmeta;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersDefinitionProperty;

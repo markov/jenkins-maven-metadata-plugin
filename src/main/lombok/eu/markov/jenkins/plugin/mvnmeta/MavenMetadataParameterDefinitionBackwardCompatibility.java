@@ -23,13 +23,14 @@
  */
 package eu.markov.jenkins.plugin.mvnmeta;
 
-import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+
+import jenkins.model.Jenkins;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
@@ -104,7 +105,7 @@ public abstract class MavenMetadataParameterDefinitionBackwardCompatibility exte
       String description = "Generated credentials for " + customCredentialsId;
       credentials = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, customCredentialsId, description, this.username, this.password);
 
-      CredentialsStore credentialsStore = CredentialsProvider.lookupStores(Hudson.getInstance()).iterator().next();
+      CredentialsStore credentialsStore = CredentialsProvider.lookupStores(Jenkins.getInstance()).iterator().next();
       credentialsStore.addCredentials(Domain.global(), credentials);
     }
 
