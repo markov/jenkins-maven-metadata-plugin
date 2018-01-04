@@ -85,8 +85,8 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
   private static final Pattern MATCH_ALL            = Pattern.compile(".*");
   private static final Charset UTF8                 = Charset.forName("UTF-8");
 
-  private transient int        maxVers              = Integer.MIN_VALUE;
-  private transient Pattern    versionFilterPattern = null;
+  private int        maxVers              = Integer.MIN_VALUE;
+  private Pattern    versionFilterPattern = null;
 
   private final String         repoBaseUrl;
   private final String         groupId;
@@ -314,6 +314,7 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
           input.close();
       } catch (IOException e) {
         // ignore
+        LOGGER.log(Level.INFO, "Could not close input stream", e);
       }
     }
   }
