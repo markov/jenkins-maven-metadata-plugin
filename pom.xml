@@ -29,15 +29,51 @@
             <id>markov</id>
             <email>gesh@markov.eu</email>
             <name>Georgi "Gesh" Markov</name>
-            <timezone>CET</timezone>
+            <timezone>+1</timezone>
         </developer>
         <developer>
             <id>marcrohlfs</id>
-            <email>rohlfs@silpion.de</email>
+            <email>Marc.Rohlfs@t-system.com</email>
             <name>Marc Rohlfs</name>
-            <timezone>CET</timezone>
+            <timezone>+1</timezone>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <name>Benjamin Bonnet</name>
+            <url>https://github.com/bonnetb</url>
+            <timezone>+1</timezone>
+        </contributor>
+        <contributor>
+            <name>David Portabella</name>
+            <url>https://github.com/dportabella</url>
+            <timezone>+1</timezone>
+        </contributor>
+        <contributor>
+            <name>Dominik Bartholdi</name>
+            <url>https://github.com/imod</url>
+            <timezone>+1</timezone>
+        </contributor>
+        <contributor>
+            <name>Mathieu Pousse</name>
+            <url>https://github.com/mathieu-pousse</url>
+            <timezone>+1</timezone>
+        </contributor>
+        <contributor>
+            <name>Mads Mohr Christensen</name>
+            <url>https://github.com/hrmohr</url>
+            <timezone>+1</timezone>
+        </contributor>
+        <contributor>
+            <name>Nandor Galambosi</name>
+            <url>https://github.com/dromie</url>
+        </contributor>
+        <contributor>
+            <name>Robert Kleinschmager</name>
+            <url>https://github.com/barclay-reg</url>
+            <timezone>+1</timezone>
+        </contributor>
+    </contributors>
 
     <licenses>
         <license>
@@ -53,7 +89,6 @@
             <url>http://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
-
     <pluginRepositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
