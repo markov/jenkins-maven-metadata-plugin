@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.normalizeSpace;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -197,6 +198,6 @@ public class MavenMetadataParameterDefinitionTest {
     private void executeTestGetCurrentArtifactInfoPattern(String url, String label, String pattern, String expectedResult) {
         MavenMetadataParameterDefinition definition =
             new MavenMetadataParameterDefinition("", "", getLocalWebServerUrl(), "", "", "", "", "", "DESC", "", "", url, label, pattern, null);
-        assertEquals(expectedResult, definition.getCurrentArtifactInfo());
+        assertEquals(normalizeSpace(expectedResult), normalizeSpace(definition.getCurrentArtifactInfo()));
     }
 }
