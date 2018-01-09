@@ -24,8 +24,9 @@
 package eu.markov.jenkins.plugin.mvnmeta;
 
 import hudson.EnvVars;
-import hudson.model.ParameterValue;
 import hudson.model.AbstractBuild;
+import hudson.model.ParameterValue;
+import hudson.model.Run;
 import hudson.util.VariableResolver;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,9 +65,6 @@ public class MavenMetadataParameterValue extends ParameterValue {
   @Exported
   private String             artifactUrl;
 
-  /**
-   * @param name
-   */
   @DataBoundConstructor
   public MavenMetadataParameterValue(String name, String description, String groupId, String artifactId, String version,
         String packaging, String classifier, String artifactUrl) {
@@ -80,7 +78,7 @@ public class MavenMetadataParameterValue extends ParameterValue {
   }
 
   @Override
-  public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
+  public void buildEnvironment(Run<?, ?> build, EnvVars env) {
     env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
     env.put(getName() + ARTIFACT_ID_SUFFIX, getArtifactId());
     env.put(getName() + VERSION_SUFFIX, getVersion());

@@ -23,7 +23,7 @@ If all you need to do is download an artifact from a repository and use it durin
 
 ## Jenkins: ##
 
-Built and tested against Jenkins 1.447.
+Built and tested against Jenkins 2.32.1.
 
 # AUTHOR & CONTRIBUTORS: #
 

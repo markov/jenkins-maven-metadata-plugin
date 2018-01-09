@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
+          <name>ARTIFACT</name>
+          <description></description>
+          <repoBaseUrl>http://repo.jenkins-ci.org/public</repoBaseUrl>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${project.artifactId}</artifactId>
+          <packaging>${project.packaging}</packaging>
+          <defaultValue></defaultValue>
+          <classifier></classifier>
+          <versionFilter></versionFilter>
+          <sortOrder>DESC</sortOrder>
+          <maxVersions></maxVersions>
+          <currentArtifactInfoUrl>file://${project.basedir}/work/jobs/test-freestyle/currentArtifactInfo.txt</currentArtifactInfoUrl>
+          <currentArtifactInfoLabel>Currently under development</currentArtifactInfoLabel>
+          <currentArtifactInfoPattern>Plugin Version: ([\S]+)</currentArtifactInfoPattern>
+          <credentialsId></credentialsId>
+        </eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>env | grep &quot;^ARTIFACT_&quot; | sort</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

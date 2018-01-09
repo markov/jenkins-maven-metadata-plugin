@@ -32,9 +32,8 @@ import hudson.model.ParameterValue;
 public class MavenMetadataRebuildParameterProvider extends RebuildParameterProvider {
 
     /**
-     * Provide a view for specified {@link ParameterValue}.
-     * <p/>
-     * Return null if cannot handle specified {@link ParameterValue}.
+     * Provide a view for specified {@link ParameterValue}. Returns {@code null} if specified
+     * {@link ParameterValue} cannot be handled.
      *
      * @param value a value to be shown in a rebuild page.
      * @return page for the parameter value. null for parameter values cannot be handled.
