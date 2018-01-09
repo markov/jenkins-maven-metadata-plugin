@@ -26,7 +26,7 @@ Built and tested against Jenkins 2.32.1.
 
 ### Development workspace
 
-When starting the development Jenkins using `mvn hpi:run` and the _work_ directory containg the `JENKINS_HOME` doesn't
+When starting the development Jenkins using `mvn hpi:run` and the _work_ directory containing the `JENKINS_HOME` doesn't
 already exist, the workspace will be created with some pre-configured test jobs for the plugin.
 
 # Authors & Contributors
@@ -49,7 +49,7 @@ Contributors:
 # References
 
 - [Repository Metadata]( http://docs.codehaus.org/display/MAVEN/Repository+Metadata)
-- [Repository Connector](: )https://wiki.jenkins-ci.org/display/JENKINS/Repository+Connector+Plugin)
+- [Repository Connector](https://wiki.jenkins-ci.org/display/JENKINS/Repository+Connector+Plugin)
 - [Maven Metadata](https://wiki.jenkins-ci.org/display/JENKINS/Maven+Metadata+Plugin)
 
 # Copyright & License
