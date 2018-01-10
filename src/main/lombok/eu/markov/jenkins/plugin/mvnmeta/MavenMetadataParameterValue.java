@@ -76,7 +76,7 @@ public class MavenMetadataParameterValue extends ParameterValue {
     this.classifier = classifier;
     this.artifactUrl = artifactUrl;
   }
-	
+
   @Override
   public Object getValue() {
     return getVersion();
