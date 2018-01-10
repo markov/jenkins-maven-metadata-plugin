@@ -26,7 +26,6 @@ package eu.markov.jenkins.plugin.mvnmeta;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
-import hudson.model.Hudson;
 import hudson.model.ParameterValue;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
@@ -48,6 +47,8 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+
+import jenkins.model.Jenkins;
 
 import com.cloudbees.plugins.credentials.CredentialsMatcher;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
@@ -85,8 +86,8 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
   private static final Pattern MATCH_ALL            = Pattern.compile(".*");
   private static final Charset UTF8                 = Charset.forName("UTF-8");
 
-  private int        maxVers              = Integer.MIN_VALUE;
-  private Pattern    versionFilterPattern = null;
+  private transient Integer    maxVers              = null;
+  private transient Pattern    versionFilterPattern = null;
 
   private final String         repoBaseUrl;
   private final String         groupId;
@@ -124,13 +125,12 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
   }
 
   public int getMaxVers() {
-    if (this.maxVers == Integer.MIN_VALUE) {
-      int maxVers = Integer.MAX_VALUE;
+    if (this.maxVers == null) {
       try {
-        maxVers = Integer.parseInt(maxVersions);
+        this.maxVers = Integer.parseInt(maxVersions);
       } catch (NumberFormatException e) {
+        this.maxVers = Integer.MAX_VALUE;
       }
-      this.maxVers = maxVers;
     }
     return this.maxVers;
   }
@@ -309,13 +309,7 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
       result.versioning.versions.add("<" + e.getClass().getName() + ": " + e.getMessage() + ">");
       return result;
     } finally {
-      try {
-        if (input != null)
-          input.close();
-      } catch (IOException e) {
-        // ignore
-        LOGGER.log(Level.INFO, "Could not close input stream", e);
-      }
+      IOUtils.closeQuietly(input);
     }
   }
 
@@ -416,7 +410,7 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
   @Override
   protected UsernamePasswordCredentials findCredentialsByCredentialsId() {
     List<UsernamePasswordCredentials> credentials =
-        CredentialsProvider.lookupCredentials(UsernamePasswordCredentials.class, Hudson.getInstance(), ACL.SYSTEM, new DomainRequirement());
+        CredentialsProvider.lookupCredentials(UsernamePasswordCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, new DomainRequirement());
     CredentialsMatcher credentialsIdMatcher = CredentialsMatchers.withId(this.credentialsId);
     return CredentialsMatchers.firstOrNull(credentials, credentialsIdMatcher);
   }
@@ -467,7 +461,7 @@ public class MavenMetadataParameterDefinition extends MavenMetadataParameterDefi
 
     public ListBoxModel doFillCredentialsIdItems() {
       List<StandardCredentials> credentials =
-          CredentialsProvider.lookupCredentials(StandardCredentials.class, Hudson.getInstance(), ACL.SYSTEM, new DomainRequirement());
+          CredentialsProvider.lookupCredentials(StandardCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, new DomainRequirement());
       CredentialsMatcher credentialsTypeMatcher = CredentialsMatchers.instanceOf(UsernamePasswordCredentials.class);
       return new StandardListBoxModel().withEmptySelection().withMatching(credentialsTypeMatcher, credentials);
     }

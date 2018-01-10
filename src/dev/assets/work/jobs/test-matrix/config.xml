@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<project>
+<matrix-project>
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
@@ -18,7 +18,7 @@
           <versionFilter></versionFilter>
           <sortOrder>DESC</sortOrder>
           <maxVersions></maxVersions>
-          <currentArtifactInfoUrl>file://${project.basedir}/work/jobs/testjob/currentArtifactInfo.txt</currentArtifactInfoUrl>
+          <currentArtifactInfoUrl>file://${project.basedir}/work/jobs/test-matrix/currentArtifactInfo.txt</currentArtifactInfoUrl>
           <currentArtifactInfoLabel>Currently under development</currentArtifactInfoLabel>
           <currentArtifactInfoPattern>Plugin Version: ([\S]+)</currentArtifactInfoPattern>
           <credentialsId></credentialsId>
@@ -31,20 +31,32 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers class="vector"/>
+  <triggers/>
   <concurrentBuild>false</concurrentBuild>
+  <axes>
+    <hudson.matrix.TextAxis>
+      <name>ARTIFACT_AXIS_A</name>
+      <values>
+        <string>1</string>
+        <string>2</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
+      <name>ARTIFACT_AXIS_B</name>
+      <values>
+        <string>3</string>
+        <string>4</string>
+      </values>
+    </hudson.matrix.TextAxis>
+  </axes>
   <builders>
     <hudson.tasks.Shell>
-      <command>echo &quot;Selected artifact:&quot;
-echo &quot;  Group ID:     ${ARTIFACT_GROUP_ID}&quot;
-echo &quot;  Artifact ID:  ${ARTIFACT_ARTIFACT_ID}&quot;
-echo &quot;  Version:      ${ARTIFACT_VERSION}&quot;
-echo &quot;  Type:         ${ARTIFACT_PACKAGING}&quot;
-echo &quot;  Classifier:   ${ARTIFACT_CLASSIFIER}&quot;
-echo &quot;  Download URL: ${ARTIFACT_ARTIFACT_URL}&quot;
-</command>
+      <command>env | grep &quot;^ARTIFACT_&quot; | sort</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
   <buildWrappers/>
-</project>
+  <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
+    <runSequentially>false</runSequentially>
+  </executionStrategy>
+</matrix-project>
