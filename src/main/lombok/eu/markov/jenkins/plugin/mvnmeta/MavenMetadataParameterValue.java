@@ -84,17 +84,6 @@ public class MavenMetadataParameterValue extends ParameterValue {
 	
   @Override
   public void buildEnvironment(Run<?, ?> build, EnvVars env) {
-    super.buildEnvironment(build, env);
-    env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
-    env.put(getName() + ARTIFACT_ID_SUFFIX, getArtifactId());
-    env.put(getName() + VERSION_SUFFIX, getVersion());
-    env.put(getName() + ARTIFACT_URL_SUFFIX, getArtifactUrl());
-    env.put(getName() + PACKAGING_SUFFIX, getPackaging());
-    env.put(getName() + CLASSIFIER_SUFFIX, getClassifier());
-  }
-	
-  @Override
-  public void buildEnvironment(Run<?, ?> build, EnvVars env) {
     env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
     env.put(getName() + ARTIFACT_ID_SUFFIX, getArtifactId());
     env.put(getName() + VERSION_SUFFIX, getVersion());
