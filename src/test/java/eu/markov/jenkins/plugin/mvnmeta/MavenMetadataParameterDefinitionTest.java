@@ -195,6 +195,14 @@ public class MavenMetadataParameterDefinitionTest {
         this.executeTestGetCurrentArtifactInfoPattern(null, "My Label", "Plugin Version: ([\\S]+)", "");
     }
 
+    @Test
+    public void testGetValueForPipeline() {
+        MavenMetadataParameterDefinition definition = new MavenMetadataParameterDefinition("variable", "void", getLocalWebServerUrl(), "com.acme", "single", "jar", "", "", "DESC",
+"null", "10", "", "", "", null);
+        MavenMetadataParameterValue result = (MavenMetadataParameterValue) definition.createValue(null, "1.6-SNAPSHOT");
+        assertEquals("version","1.6-SNAPSHOT",result.getValue());
+    }
+
     private void executeTestGetCurrentArtifactInfoPattern(String url, String label, String pattern, String expectedResult) {
         MavenMetadataParameterDefinition definition =
             new MavenMetadataParameterDefinition("", "", getLocalWebServerUrl(), "", "", "", "", "", "DESC", "", "", url, label, pattern, null);
