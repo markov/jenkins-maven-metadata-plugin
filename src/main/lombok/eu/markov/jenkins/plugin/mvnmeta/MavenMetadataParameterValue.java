@@ -78,6 +78,11 @@ public class MavenMetadataParameterValue extends ParameterValue {
   }
 
   @Override
+  public Object getValue() {
+    return getVersion();
+  }
+	
+  @Override
   public void buildEnvironment(Run<?, ?> build, EnvVars env) {
     env.put(getName() + GROUP_ID_SUFFIX, getGroupId());
     env.put(getName() + ARTIFACT_ID_SUFFIX, getArtifactId());
