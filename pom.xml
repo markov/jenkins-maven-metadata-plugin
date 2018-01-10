@@ -124,6 +124,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <profiles>
         <profile>
             <!-- Automatically create the base configuration for the Jenkins development workspace when it doesn't exist. -->
