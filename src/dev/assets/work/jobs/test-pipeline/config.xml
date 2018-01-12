@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps">
+    <script>
+pipeline {
+    agent any
+    stages {
+        stage(&apos;test&apos;) {
+            steps {
+                script {
+                    userInput = input(
+                        id:&apos;userInput&apos;,
+                        message: &apos;Choose jar version &apos;,
+                        parameters: [[
+                            $class: &apos;MavenMetadataParameterDefinition&apos;,
+                            name: &apos;version&apos;,
+                            description:&apos;&apos;,
+                            repoBaseUrl: &apos;http://repo.jenkins-ci.org/public&apos;,
+                            groupId: &apos;${project.groupId}&apos;,
+                            artifactId: &apos;${project.artifactId}&apos;,
+                            packaging: &apos;${project.packaging}&apos;,
+                            defaultValue: &apos;&apos;,
+                            classifier:&apos;&apos;,
+                            versionFilter: &apos;&apos;,
+                            sortOrder: &apos;DESC&apos;,
+                            maxVersions: &apos;&apos;,
+                            currentArtifactInfoUrl: &apos;&apos;,
+                            currentArtifactInfoLabel: &apos;&apos;,
+                            currentArtifactInfoPattern: &apos;&apos;,
+                            credentialsId: &apos;&apos;
+                        ]],
+                    )
+                    print(&quot;Chosen version : &quot; + userInput)
+                }
+            }
+        }
+    }
+}
+    </script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+</flow-definition>
