@@ -19,7 +19,7 @@ pipeline {
                             $class: &apos;MavenMetadataParameterDefinition&apos;,
                             name: &apos;version&apos;,
                             description:&apos;&apos;,
-                            repoBaseUrl: &apos;http://repo.jenkins-ci.org/public&apos;,
+                            repoBaseUrl: &apos;${dev.repoBaseUrl}&apos;,
                             groupId: &apos;${project.groupId}&apos;,
                             artifactId: &apos;${project.artifactId}&apos;,
                             packaging: &apos;${project.packaging}&apos;,

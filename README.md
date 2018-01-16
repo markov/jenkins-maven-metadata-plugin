@@ -27,7 +27,14 @@ Built and tested against Jenkins 2.32.1.
 ### Development workspace
 
 When starting the development Jenkins using `mvn hpi:run` and the _work_ directory containing the `JENKINS_HOME` doesn't
-already exist, the workspace will be created with some pre-configured test jobs for the plugin.
+already exist, the workspace will be created with some pre-configured test jobs for the plugin. The re-creation of the
+development workspace can be forced by deleting the _work_ directory before running `mvn hpi:run` - of course, all manual
+changes, as well as build histories will be lost then.
+
+If You're developing behind a proxy and/or a [Maven Repository Manager](https://maven.apache.org/repository-management.html),
+it may be useful to change the `repoBaseUrl` to the base URL of Your organisations repository manager. This can easily
+be achieved by setting the system property `dev.repoBaseUrl` when starting the development Jenkins for the first time
+(after the _work_ directory was deleted). You may just set the system property in Your `MAVEN_OPTS`...
 
 # Authors & Contributors
 

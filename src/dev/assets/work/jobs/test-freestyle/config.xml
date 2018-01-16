@@ -9,7 +9,7 @@
         <eu.markov.jenkins.plugin.mvnmeta.MavenMetadataParameterDefinition>
           <name>ARTIFACT</name>
           <description></description>
-          <repoBaseUrl>http://repo.jenkins-ci.org/public</repoBaseUrl>
+          <repoBaseUrl>${dev.repoBaseUrl}</repoBaseUrl>
           <groupId>${project.groupId}</groupId>
           <artifactId>${project.artifactId}</artifactId>
           <packaging>${project.packaging}</packaging>
