@@ -153,7 +153,6 @@
             <groupId>org.jenkins-ci</groupId>
             <artifactId>symbol-annotation</artifactId>
             <version>1.5</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci</groupId>
